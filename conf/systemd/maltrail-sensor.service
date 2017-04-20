@@ -1,0 +1,10 @@
+[Unit]
+Description=Maltrail sensor
+
+[Service]
+WorkingDirectory=/opt/oafe/maltrail
+ExecStart=/usr/bin/python /opt/oafe/maltrail/sensor.py
+
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,36 @@
+##This is list of the applications running and which ports they are available.##
+##This list is as of 11/14/16##
+
+Application	TCP Port
+Cuckoo Web (local)	8511
+Cuckoo Web (external access)	8501
+Cuckoo API (local)	8510
+Cuckoo API (external access)	8504
+Cuckoo Web (local PORTUGUESE)	8512
+Cuckoo Web (external PORTUGUESE)	8506
+Kibana (local)	5601
+Kibana (external access)	8502
+Kibi (local)	5606
+Kibi (external access)	8507
+Elasticsearch (local)	9200
+Elasticsearch (external access)
+Google Rapid Response	8000
+Logstash	5004
+GrayLog (logs)	12900
+GrayLog (Web w/login)	9000
+supervisord inet http	9001
+cockpit	9090
+Viper Web (local)	8514
+Viper Web (external)	8505
+Viper API (local)	8513
+Viper API (external)	8503
+Maltrail (local)	8338
+Maltrail (external)	8506
+Supervisor Web	8508
+Moloch (local)	8005
+Moloch (external)	8006
+FlowBAT
+ntopng (local)	3000
+ntopng (external)	8509
+IVRE Web Interface	32500
+webmin	32505

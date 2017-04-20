@@ -1,0 +1,14 @@
+[Unit]
+Description=Viper API Service
+
+[Service]
+Type=simple
+User=oafe
+Group=oafe
+WorkingDirectory=/opt/oafe/viper
+ExecStart=python /opt/oafe/viper/viper-api --host 0.0.0.0 --port 8513
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

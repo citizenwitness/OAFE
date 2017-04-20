@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "Starting Logstash Ingest..."
+cd /opt/logstash/bin/
+./logstash -f ../bro-appstats.conf &
+./logstash -f ../bro-dns.conf &
+./logstash -f ../bro-files.conf &
+./logstash -f ../bro-weird.conf &
+./logstash -f ../sensor.conf &
+

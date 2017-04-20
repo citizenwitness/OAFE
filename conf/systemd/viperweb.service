@@ -1,0 +1,14 @@
+[Unit]
+Description=Viper Web Interface
+
+[Service]
+Type=simple
+User=oafe
+Group=oafe
+WorkingDirectory=/opt/oafe/viper
+ExecStart=python /opt/oafe/viper/viper-web --host 0.0.0.0 --port 8514
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

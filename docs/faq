@@ -1,0 +1,346 @@
+Optum Advanced Field Examiner Guide
+===================
+
+
+This is a basic FAQ for the Optum Advance Field Examiner (OAFE) devices.
+
+----------
+
+
+Services
+-------------
+
+Moloch Capture
+
+ - Check service status with the following command: `ps -ef|grep moloch`
+   and look for processes that say moloch-capture.
+ - To start the Moloch capture service, issue `sudo systemctl start
+   molochcapture.service` from the command line.
+   
+Moloch Viewer
+
+	 - Check service status: `ps -ef|grep moloch` and locate any process with viewer.js -c /data/moloch/etc/config.ini
+	 - The service can also be verified by checking the website running on port 8005 from a web browser or running the command `sudo lsof -i | grep 8005` from the terminal.
+	 - Start the Moloch viewer by running `sudo systemctl start molochviewer.service` and use the previous steps to verify that the service started.  
+	 - The service can be stopped by typing `sudo systemctl stop molochviewer.service` and restarted by running `sudo systemctl restart molochviewer.service`.
+ - **Maltrail Server**
+	 - Check service status: `ps -ef|grep maltrail` and locate "python /opt/oafe/maltrail/server.py"
+	 - The service can be started by issuing the command: `sudo systemctl start maltrailserver.service`.
+	 - Stop the service: `sudo systemctl stop maltrailserver.service`.
+	 - Restart the service: `sudo systemctl restart maltrailserver.service`
+	 - Troubleshoot service startup issues: `sudo systemctl status maltrailserver.service`
+ - **Maltrail Sensor**
+	 - Check service status: `sudo lsof -i|grep 8338`.  There should be a python service listening on ipv4 8338
+	 - Start the service
+		 - cd /opt/oafe/maltrail
+		 - type `sudo python sensor.py &`
+	 - Stop the service
+		 - Issue `ps -ef|grep sensor.py`
+		 - Note the PIDs for each sensor.py service
+		 - Kill each sensor.py instance by issuing `sudo kill -9 PID` (Replace the PID with each PID you noted previously.  Keep running the `ps -ef|grep sensor.py` command until no sensor.py processes exist.
+ - **OpenVPN**
+	 - Open a terminal session and run ifconfig.  Look for an adapter starting with "tun" that has an IP address on the 172.16.4.x subnet.
+	 - To restart the service: `sudo systemctl restart openvpn@`
+	 - If that does not remedy the problem, reboot the machine but remember that you will need to start Moloch and Maltrail manually.
+ - **NtopNG Netflow**
+	 - Check service status:
+		 - Web interface: Navigate to IP:3000
+		 - Issue `sudo lsof -i|grep 3000 ` and ensure ntopng is listening on 3000
+		 - Use the command `ps -ef|grep ntopng` and verify the service is running
+		 - `sudo systemctl status ntopng.service` can assist you with troubleshooting errors with the service.
+	 - Start/Stop/Restart
+		 - `sudo systemctl start ntopng.service`
+		 - `sudo systemctl stop ntopng.service`
+		 - `sudo systemctl restart ntopng.service`
+ - **Cuckoo Sandbox**
+	 - Cuckoo sandbox will need a little extra configuration to start.  Please ensure that vboxnet0 has been created in Oracle VirtualBox.  You can check this by opening VirtualBox and selecting File -> Preferences -> Network and clicking the host-only networks tab.  There should be a vboxnet0 interface there.  If there is not, just select the + icon near the right side.
+	 - Start the Windows7x64VLSandbox1 VM.  Once the machine is running, ensure that you can get to the internet from Internet Explorer.  If you can get to the internet, select Machine -> Take Snapshot from the menu of the running virtual machine and name the snapshot "cuckoosnap".  
+	 - If the VM does not have internet, use ifconfig to ascertain the name of the management interface.  Typically this should be eno4, on a DL380 Gen9, but may be something else on another platform.  You will need to edit /etc/iptables/rules.v4.  You will need to use `sudo vim /etc/iptables/rules.v4` to open and edit the file.  Locate the line with the eno4 interface `-A FORWARD -s 192.168.56.0/24 -i vboxnet0 -o eno4 -m conntrack --ctstate NEW -j ACCEPT` and change eno4 to the management interface you located with the ifconfig command.
+	 - You may need to reload iptables and ensure forwarding is enabled.  `sudo ufw reload` and `sudo ufw restart` should ensure the rules are applied.  Forward IP v4 traffic by issuing `sudo sysctl -w net.ipv4.ip_forward=1`
+	 - After the above is complete, cd to /opt/oafe/cuckoo.  Run `python cuckoo.py`.  If there are no errors, just ctrl-c and stop the service.  Now run `python cuckoo.py &` to run cuckoo in the background.
+	 - Switch to the cuckoo web directory, `cd /opt/oafe/cuckoo/web` and run `python manage.py runserver 0.0.0.0:8511` or `python manage.py runserver 127.0.0.1:8511` if you are sure Nginx is serving running properly.
+	 - Open the interface on https://x.x.x.x:8501 and log in.  Submit a malware sample to test.
+ - **Google Rapid Response (GRR)**
+	 - Open the Chromium browser (you must use Chromium or Google Chrome to access GRR) and type in http://x.x.x.x:8000 and login.  *(subsitute the OAFE IP address for x.x.x.x*)
+ - **Viper Static Analysis Framework**
+	 - 
+	
+
+
+> **Note:**
+
+> - The iLO cards will be integrated into the new Optum OAFE Azure cloud.  They will have an entirely new management network.
+> - Your local documents are not shared between different browsers or computers.
+> - Clearing your browser's data may **delete all your local documents!** Make sure your documents are synchronized with **Google Drive** or **Dropbox** (check out the [<i class="icon-refresh"></i> Synchronization](#synchronization) section).
+
+#### <i class="icon-file"></i> Create a document
+
+The document panel is accessible using the <i class="icon-folder-open"></i> button in the navigation bar. You can create a new document by clicking <i class="icon-file"></i> **New document** in the document panel.
+
+#### <i class="icon-folder-open"></i> Switch to another document
+
+All your local documents are listed in the document panel. You can switch from one to another by clicking a document in the list or you can toggle documents using <kbd>Ctrl+[</kbd> and <kbd>Ctrl+]</kbd>.
+
+#### <i class="icon-pencil"></i> Rename a document
+
+You can rename the current document by clicking the document title in the navigation bar.
+
+#### <i class="icon-trash"></i> Delete a document
+
+You can delete the current document by clicking <i class="icon-trash"></i> **Delete document** in the document panel.
+
+#### <i class="icon-hdd"></i> Export a document
+
+You can save the current document to a file by clicking <i class="icon-hdd"></i> **Export to disk** from the <i class="icon-provider-stackedit"></i> menu panel.
+
+> **Tip:** Check out the [<i class="icon-upload"></i> Publish a document](#publish-a-document) section for a description of the different output formats.
+
+
+----------
+
+
+Synchronization
+-------------------
+
+StackEdit can be combined with <i class="icon-provider-gdrive"></i> **Google Drive** and <i class="icon-provider-dropbox"></i> **Dropbox** to have your documents saved in the *Cloud*. The synchronization mechanism takes care of uploading your modifications or downloading the latest version of your documents.
+
+> **Note:**
+
+> - Full access to **Google Drive** or **Dropbox** is required to be able to import any document in StackEdit. Permission restrictions can be configured in the settings.
+> - Imported documents are downloaded in your browser and are not transmitted to a server.
+> - If you experience problems saving your documents on Google Drive, check and optionally disable browser extensions, such as Disconnect.
+
+#### <i class="icon-refresh"></i> Open a document
+
+You can open a document from <i class="icon-provider-gdrive"></i> **Google Drive** or the <i class="icon-provider-dropbox"></i> **Dropbox** by opening the <i class="icon-refresh"></i> **Synchronize** sub-menu and by clicking **Open from...**. Once opened, any modification in your document will be automatically synchronized with the file in your **Google Drive** / **Dropbox** account.
+
+#### <i class="icon-refresh"></i> Save a document
+
+You can save any document by opening the <i class="icon-refresh"></i> **Synchronize** sub-menu and by clicking **Save on...**. Even if your document is already synchronized with **Google Drive** or **Dropbox**, you can export it to a another location. StackEdit can synchronize one document with multiple locations and accounts.
+
+#### <i class="icon-refresh"></i> Synchronize a document
+
+Once your document is linked to a <i class="icon-provider-gdrive"></i> **Google Drive** or a <i class="icon-provider-dropbox"></i> **Dropbox** file, StackEdit will periodically (every 3 minutes) synchronize it by downloading/uploading any modification. A merge will be performed if necessary and conflicts will be detected.
+
+If you just have modified your document and you want to force the synchronization, click the <i class="icon-refresh"></i> button in the navigation bar.
+
+> **Note:** The <i class="icon-refresh"></i> button is disabled when you have no document to synchronize.
+
+#### <i class="icon-refresh"></i> Manage document synchronization
+
+Since one document can be synchronized with multiple locations, you can list and manage synchronized locations by clicking <i class="icon-refresh"></i> **Manage synchronization** in the <i class="icon-refresh"></i> **Synchronize** sub-menu. This will let you remove synchronization locations that are associated to your document.
+
+> **Note:** If you delete the file from **Google Drive** or from **Dropbox**, the document will no longer be synchronized with that location.
+
+----------
+
+
+Publication
+-------------
+
+Once you are happy with your document, you can publish it on different websites directly from StackEdit. As for now, StackEdit can publish on **Blogger**, **Dropbox**, **Gist**, **GitHub**, **Google Drive**, **Tumblr**, **WordPress** and on any SSH server.
+
+#### <i class="icon-upload"></i> Publish a document
+
+You can publish your document by opening the <i class="icon-upload"></i> **Publish** sub-menu and by choosing a website. In the dialog box, you can choose the publication format:
+
+- Markdown, to publish the Markdown text on a website that can interpret it (**GitHub** for instance),
+- HTML, to publish the document converted into HTML (on a blog for example),
+- Template, to have a full control of the output.
+
+> **Note:** The default template is a simple webpage wrapping your document in HTML format. You can customize it in the **Advanced** tab of the <i class="icon-cog"></i> **Settings** dialog.
+
+#### <i class="icon-upload"></i> Update a publication
+
+After publishing, StackEdit will keep your document linked to that publication which makes it easy for you to update it. Once you have modified your document and you want to update your publication, click on the <i class="icon-upload"></i> button in the navigation bar.
+
+> **Note:** The <i class="icon-upload"></i> button is disabled when your document has not been published yet.
+
+#### <i class="icon-upload"></i> Manage document publication
+
+Since one document can be published on multiple locations, you can list and manage publish locations by clicking <i class="icon-upload"></i> **Manage publication** in the <i class="icon-provider-stackedit"></i> menu panel. This will let you remove publication locations that are associated to your document.
+
+> **Note:** If the file has been removed from the website or the blog, the document will no longer be published on that location.
+
+----------
+
+
+OAFE Application Ports
+--------------------
+
+StackEdit supports **Markdown Extra**, which extends **Markdown** syntax with some nice features.
+
+> **Tip:** You can disable any **Markdown Extra** feature in the **Extensions** tab of the <i class="icon-cog"></i> **Settings** dialog.
+
+> **Note:** You can find more information about **Markdown** syntax [here][2] and **Markdown Extra** extension [here][3].
+
+
+### Web Services
+
+**Markdown Extra** has a special syntax for tables:
+
+| Application                     | TCP Port  |
+| ------------------------------- |:---------:|
+|Cuckoo Web (local)	|8511|
+|Cuckoo Web (external access)	|8501|
+|Cuckoo API (local)	|8510|
+|Cuckoo API (external access)	|8504|
+|Cuckoo Web (local PORTUGUESE)	|8512|
+|Cuckoo Web (external PORTUGUESE)	|8506|
+|Kibana (local)	|5601|
+|Kibana (external access)	|8502|
+|Kibi (local)	|5606|
+|Kibi (external access)	|8507|
+|Elasticsearch (local)	|9200|
+|Elasticsearch (external access)| |	
+|Google Rapid Response	|8000|
+|Logstash	|5004|
+|GrayLog (logs)	|12900|
+|GrayLog (Web w/login)	|9000|
+|Supervisor Web Interface |9001|
+|Cockpit |9090|
+|Viper Web (local)	|8514|
+|Viper Web (external)	|8505|
+|Viper API (local)	|8513|
+|Viper API (external)	|8503|
+|Maltrail (local)	|8338|
+|Maltrail (external)	|8506|
+|Supervisor Web	|8508|
+|Moloch	(local)|8005|
+|Moloch	(external)|8006|
+|ntopng	(local) |3000|
+|ntopng	(external) |8509| 
+|IVRE Web Interface	|32500|
+|webmin|32505|
+
+You can specify column alignment with one or two colons:
+
+| Item     | Value | Qty   |
+| :------- | ----: | :---: |
+| Computer | $1600 |  5    |
+| Phone    | $12   |  12   |
+| Pipe     | $1    |  234  |
+
+
+### Definition Lists
+
+**Markdown Extra** has a special syntax for definition lists too:
+
+Term 1
+Term 2
+:   Definition A
+:   Definition B
+
+Term 3
+
+:   Definition C
+
+:   Definition D
+
+	> part of definition D
+
+
+### Fenced code blocks
+
+GitHub's fenced code blocks are also supported with **Highlight.js** syntax highlighting:
+
+```
+// Foo
+var bar = 0;
+```
+
+> **Tip:** To use **Prettify** instead of **Highlight.js**, just configure the **Markdown Extra** extension in the <i class="icon-cog"></i> **Settings** dialog.
+
+> **Note:** You can find more information:
+
+> - about **Prettify** syntax highlighting [here][5],
+> - about **Highlight.js** syntax highlighting [here][6].
+
+
+### Footnotes
+
+You can create footnotes like this[^footnote].
+
+  [^footnote]: Here is the *text* of the **footnote**.
+
+
+### SmartyPants
+
+SmartyPants converts ASCII punctuation characters into "smart" typographic punctuation HTML entities. For example:
+
+|                  | ASCII                        | HTML              |
+ ----------------- | ---------------------------- | ------------------
+| Single backticks | `'Isn't this fun?'`            | 'Isn't this fun?' |
+| Quotes           | `"Isn't this fun?"`            | "Isn't this fun?" |
+| Dashes           | `-- is en-dash, --- is em-dash` | -- is en-dash, --- is em-dash |
+
+
+### Table of contents
+
+You can insert a table of contents using the marker `[TOC]`:
+
+[TOC]
+
+
+### MathJax
+
+You can render *LaTeX* mathematical expressions using **MathJax**, as on [math.stackexchange.com][1]:
+
+The *Gamma function* satisfying $\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$ is via the Euler integral
+
+$$
+\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.
+$$
+
+> **Tip:** To make sure mathematical expressions are rendered properly on your website, include **MathJax** into your template:
+
+```
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+```
+
+> **Note:** You can find more information about **LaTeX** mathematical expressions [here][4].
+
+
+### UML diagrams
+
+You can also render sequence diagrams like this:
+
+```sequence
+Alice->Bob: Hello Bob, how are you?
+Note right of Bob: Bob thinks
+Bob-->Alice: I am good thanks!
+```
+
+And flow charts like this:
+
+```flow
+st=>start: Start
+e=>end
+op=>operation: My Operation
+cond=>condition: Yes or No?
+
+st->op->cond
+cond(yes)->e
+cond(no)->op
+```
+
+> **Note:** You can find more information:
+
+> - about **Sequence diagrams** syntax [here][7],
+> - about **Flow charts** syntax [here][8].
+
+### Support StackEdit
+
+[![](https://cdn.monetizejs.com/resources/button-32.png)](https://monetizejs.com/authorize?client_id=ESTHdCYOi18iLhhO&summary=true)
+
+  [^stackedit]: [StackEdit](https://stackedit.io/) is a full-featured, open-source Markdown editor based on PageDown, the Markdown library used by Stack Overflow and the other Stack Exchange sites.
+
+
+  [1]: http://math.stackexchange.com/
+  [2]: http://daringfireball.net/projects/markdown/syntax "Markdown"
+  [3]: https://github.com/jmcmanus/pagedown-extra "Pagedown Extra"
+  [4]: http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference
+  [5]: https://code.google.com/p/google-code-prettify/
+  [6]: http://highlightjs.org/
+  [7]: http://bramp.github.io/js-sequence-diagrams/
+  [8]: http://adrai.github.io/flowchart.js/

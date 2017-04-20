@@ -1,0 +1,34 @@
+##This document was created and is maintained by Kevin Wetzel##
+
+Maltrail Signature Management
+
+Maltrail is a lightweight Intrusion Detection platform that runs on Unix host to detect traffic that needs to be looked at based on static “trails” of information that assist you in identifying malware and infections. As such the maintenance of the trails is required to ensure that old IOC information is removed and new IOC information can be input into the system for monitoring. 
+
+Trail File Locations:
+The trail information is stored in /trails/custom in the malware installation directory. In this directory you will notice signatures that are provided as part of the installation. To add new indicators you can create a new file in this directory. Name the file after the campaign or with some identifying information as that information will be what Maltrail reports when an IOC is matched in network traffic when the system is monitoring. 
+
+For instance if creating a file to monitor for “PONY Malware” you can name the file “pony-malware-12-1-2015” to indicate that when a match is detected the alert title will be “pony-malware-12-1-2015” in the maltrail UI. Inside the file you would list each indicator or IOC that you want the system to look for. See the example file below. An IOC or indicator can be a string patter that would be seen in a network packet, an IP address or hostname, URL or full URL or HTTP User-Agent header value. 
+
+Here is an example:
+http://109.162.38.120/harsh02.exe
+109.162.38.11
+zvpprsensinaix.com
+
+Once you have modified the trails (IOC Files for Matching) you then need to restart the maltrail services. 
+
+Restarting Maltrail
+The easiest way to restart maltrail to get it to recognize your changes is to simply execute the following commands. 
+
+1. pkill –f sensor.py
+2. Run (as root) the sensor.py script located in the maltrail directory. 
+
+It really is that simple. If you have more detailed questions on how to update signatures in maltrail please contact Kevin Wetzel (kevin.wetzel@optum.com) . 
+
+Future Centralized Management of Maltrail with MISP Export
+The easiest way to update maltrail is to use MISP export API to generate the “custom trails” in the malware product. 
+Using the MISP API you can make a call to the MISP centralized server with a CRON job to request the domains, URI’s, URL’s, IP addresses and patterns in network attributes from MISP and save them as a file with an identifier indicating the Alert Name through the naming of the custom trail file (See my previous PONY example). 
+
+MISP “TO IDS” Checkbox
+With a centralized MISP server you can specify the “TO IDS” attribute on individual IOC values in each event. Using this you can turn on and turn off specific items you want to monitor in maltrail. This method ensures that all devices at a specific customers site is configure identically ensuring consistent results and a centralized management location of all Maltrail instances that are being deployed on the commercial product OAFE or similar configurations. 
+
+

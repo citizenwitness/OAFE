@@ -1,0 +1,16 @@
+
+[Unit]
+Description=Maltrail Server
+Before=maltrailsensor.service
+
+[Service]
+Type=simple
+User=oafe
+Group=oafe
+WorkingDirectory=/opt/oafe/maltrail/
+ExecStart=/opt/oafe/maltrail/server.py
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

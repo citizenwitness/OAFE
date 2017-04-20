@@ -1,0 +1,13 @@
+[Unit]
+Description=Kibi
+
+[Service]
+Type=simple
+User=oafe
+Group=oafe
+ExecStart=/opt/oafe/kibi/bin/kibi
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

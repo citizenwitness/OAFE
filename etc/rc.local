@@ -1,0 +1,28 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+systemctl restart NetworkManager.service
+for i in `seq 8 100`; do mknod /dev/loop$i b 7 $i; done
+#Need to modify this to the correct location based on how bro is Installed, Package is fine just needs tested.
+logger -p warn "Starting Bro IDS System..."
+/usr/bin/broctl start &
+logger -p warn "Starting logstash ingest files..."
+/opt/logstash/start &
+ifconfig eno1 up
+ifconfig eno1 promisc
+ifconfig eno2 up
+ifconfig eno2 promisc
+ifconfig eno3 up
+ifconfig eno3 promisc
+ifconfig eno4 up
+ifconfig eno4 promisc
+exit 0

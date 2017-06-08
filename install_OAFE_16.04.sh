@@ -753,6 +753,9 @@ echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
         chmod -R 775 /opt/oafe/oafeserver/Packages/
         chmod -R g+s /opt/oafe/oafeserver/Packages/
     fi
+    wget -O /opt/oafe/OAFE/Packages/elasticsearch-5.3.2.deb https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.3.2.deb
+    wget -O /opt/oafe/OAFE/Packages/kibana-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/kibana/kibana-5.3.2-amd64.deb
+    wget -O /opt/oafe/OAFE/Packages/filebeat-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.3.2-amd64.deb
     dpkg -i /opt/oafe/oafeserver/Packages/elasticsearch-5.2.2.deb
     dpkg -i /opt/oafe/oafeserver/Packages/filebeat-5.2.2-amd64.deb
     dpkg -i /opt/oafe/oafeserver/Packages/kibana-5.2.2-amd64.deb

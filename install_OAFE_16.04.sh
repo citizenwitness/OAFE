@@ -747,92 +747,73 @@ echoinfo "Creating GeoIP config and downloading current databases"
     geoipupdate >> $HOME/oafe-install.log || return 1
 
 echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
-    if [ ! -d /opt/oafe/oafeubuntu/Packages/ ]; then
-        mkdir -p /opt/oafe/oafeubuntu/Packages/
-        chown oafe:oafe /opt/oafe/oafeubuntu/Packages/
-        chmod -R 775 /opt/oafe/oafeubuntu/Packages/
-        chmod -R g+s /opt/oafe/oafeubuntu/Packages/
+    if [ ! -d /opt/oafe/oafeserver/Packages/ ]; then
+        mkdir -p /opt/oafe/oafeserver/Packages/
+        chown oafe:oafe /opt/oafe/oafeserver/Packages/
+        chmod -R 775 /opt/oafe/oafeserver/Packages/
+        chmod -R g+s /opt/oafe/oafeserver/Packages/
     fi
-    dpkg -i /opt/oafe/oafeubuntu/Packages/elasticsearch-2.4.4.deb
-    dpkg -i /opt/oafe/oafeubuntu/Packages/logstash-2.4.1_all.deb
-    dpkg -i /opt/oafe/oafeubuntu/Packages/kibana-4.6.4-amd64.deb
-    if [ ! -d /etc/logstash/conf.d/bro/ ]; then
-        mkdir -p /etc/logstash/conf.d/bro/
-        chown oafe:oafe /etc/logstash/conf.d/bro/
-        chmod -R 775 /etc/logstash/conf.d/bro/
-        chmod -R g+s /etc/logstash/conf.d/bro/
+    dpkg -i /opt/oafe/oafeserver/Packages/elasticsearch-5.2.2.deb
+    dpkg -i /opt/oafe/oafeserver/Packages/filebeat-5.2.2-amd64.deb
+    dpkg -i /opt/oafe/oafeserver/Packages/kibana-5.2.2-amd64.deb
+    if [ ! -d /etc/logstash/conf.d/ ]; then
+        mkdir -p /etc/logstash/conf.d/
+        chown oafe:oafe /etc/logstash/conf.d/
+        chmod -R 775 /etc/logstash/conf.d/
+        chmod -R g+s /etc/logstash/conf.d/
     fi
-    if [ ! -d /etc/logstash/conf.d/kansa/ ]; then
-        mkdir -p /etc/logstash/conf.d/kansa/
-        chown oafe:oafe /etc/logstash/conf.d/kansa/
-        chmod -R 775 /etc/logstash/conf.d/kansa/
-        chmod -R g+s /etc/logstash/conf.d/kansa/
-    fi
-    if [ ! -d /etc/logstash/conf.d/maltrail/ ]; then
-        mkdir -p /etc/logstash/conf.d/maltrail/
-        chown oafe:oafe /etc/logstash/conf.d/maltrail/
-        chmod -R 775 /etc/logstash/conf.d/maltrail/
-        chmod -R g+s /etc/logstash/conf.d/maltrail/
-    fi
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/logstash_kansa_ingest.conf /etc/logstash/conf.d/kansa/logstash_kansa_ingest.conf >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/bro-appstats.conf /opt/logstash/  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/bro-dns.conf /opt/logstash/  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/bro-files.conf /opt/logstash/  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/bro-weird.conf /opt/logstash/  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/sensor.conf /opt/logstash/  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/start /opt/logstash/  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/stop /opt/logstash/  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/elasticsearch/elasticsearch.in.sh /usr/share/elasticsearch/bin/ >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/conf/kibana/kibana.yml /opt/kibana/config/kibana.yml  >> $HOME/oafe-install.log || return 1
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/logstash_kansa_ingest.conf /etc/logstash/conf.d/logstash_kansa_ingest.conf >> $HOME/oafe-install.log
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-appstats.conf /etc/logstash/conf.d/bro-appstats.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-dns.conf /etc/logstash/conf.d/bro-dns.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-files.conf /etc/logstash/conf.d/bro-files.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-weird.conf /etc/logstash/conf.d/bro-weird.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/logstash_maltrail_sensor.conf /etc/logstash/conf.d/logstash_maltrail_sensor.conf  >> $HOME/oafe-install.log
+#    cp -f /opt/oafe/oafeserver/conf/elasticsearch/elasticsearch.in.sh /usr/share/elasticsearch/bin/ >> $HOME/oafe-install.log
+#    cp -f /opt/oafe/oafeserver/conf/kibana/kibana.yml /opt/kibana/config/kibana.yml  >> $HOME/oafe-install.log || return 1
     #moving over rc.local file
     cp -f /etc/rc.local /etc/rc.local.backup >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeubuntu/etc/rc.local /etc/rc.local >> $HOME/oafe-install.log
+    cp -f /opt/oafe/oafeserver/etc/rc.local /etc/rc.local >> $HOME/oafe-install.log
     systemctl daemon-reload
     systemctl enable elasticsearch
     systemctl enable kibana
-    systemctl enable logstash
+    systemctl enable filebeat
     systemctl start elasticsearch
     sleep 1m
-    apt-get install graylog-server
-    systemctl enable graylog-server
     systemctl start kibana
-    systemctl start logstash
-    systemctl start graylog-server
-    update-rc.d graylog-server defaults 96 9
-    /usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head
-    /usr/share/elasticsearch/bin/plugin install jayant2014/bigdesk
-    /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf/2.x
-    rm -f /etc/init/graylog-server.override
-    SECRET=$(pwgen -s 96 1)
-    sudo -E sed -i -e 's/password_secret =.*/password_secret = '$SECRET'/' /etc/graylog/server/server.conf
-    PASSWORD=$(echo -n admin | shasum -a 256 | awk '{print $1}')
-    sudo -E sed -i -e 's/root_password_sha2 =.*/root_password_sha2 = '$PASSWORD'/' /etc/graylog/server/server.conf
-    service graylog-server start
-    sudo ln -s -f /opt/logstash/bin/logstash /usr/bin/logstash >> $HOME/oafe-install.log 2>&1
-    sudo ln -s -f /opt/logstash/bin/logstash-plugin /usr/bin/logstash-plugin >> $HOME/oafe-install.log 2>&1
-    sudo ln -s -f /opt/logstash/bin/logstash.lib.sh /usr/bin/logstash.lib.sh >> $HOME/oafe-install.log 2>&1
-    logstash-plugin install logstash-filter-translate >> $HOME/oafe-install.log 2>&1
+    systemctl start filebeat
+    cp -f /opt/oafe/oafeserver/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
+    wget -O /opt/oafe/oafeserver/Packages/logstash-5.3.2.zip https://artifacts.elastic.co/downloads/logstash/logstash-5.3.2.zip
+    unzip /opt/oafe/oafeserver/Packages/logstash-5.3.2.zip -d /opt/oafe/ >> $HOME/oafe-install.log 2>&1
+    mv -f /opt/oafe/logstash-5.3.2/ /opt/oafe/logstash >> $HOME/oafe-install.log 2>&1
+    sudo ln -s -f /opt/oafe/logstash/bin/logstash /usr/bin/logstash >> $HOME/oafe-install.log 2>&1
+    sudo ln -s -f /opt/oafe/logstash/bin/logstash-plugin /usr/bin/logstash-plugin >> $HOME/oafe-install.log 2>&1
+    sudo ln -s -f /opt/oafe/logstash/bin/logstash.lib.sh /usr/bin/logstash.lib.sh >> $HOME/oafe-install.log 2>&1
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/start /opt/oafe/logstash/start  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/stop /opt/oafe/logstash/stop  >> $HOME/oafe-install.log
+/opt/oafe/logstash/bin/logstash-plugin install logstash-filter-translate >> $HOME/oafe-install.log 2>&1
     
 echoinfo "Install Kibi"
-if [ -f "/opt/oafe/oafeubuntu/Packages/kibi-community-standalone-4.6.4-linux-x64.zip" ];
+
+wget -O /opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip https://download.support.siren.solutions/kibi/community?file=kibi-community-standalone-5.2.2-beta-1-linux-x64.zip
+if [ -f "/opt/oafe/oafeserver/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip" ];
     then
-      echo "kibi-community-standalone-4.6.4-linux-x64.zip found."
+      echo "kibi-community-standalone-5.2.2-beta-1-linux-x64.zip found."
       chmod -R 775 /opt/oafe/
-      chmod 777 /opt/oafe/oafeubuntu/Packages/kibi-community-standalone-4.6.4-linux-x64.zip  >> $HOME/oafe-install.log || return 1
-	  unzip /opt/oafe/oafeubuntu/Packages/kibi-community-standalone-4.6.4-linux-x64.zip -d /opt/oafe/ >> $HOME/oafe-install.log || return 1
-      mv -f /opt/oafe/kibi-community-standalone-4.6.3-2-linux-x64 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
+      chmod 777 /opt/oafe/oafeserver/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip  >> $HOME/oafe-install.log || return 1
+	  unzip /opt/oafe/oafeserver/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip -d /opt/oafe/ >> $HOME/oafe-install.log || return 1
+      mv -f /opt/oafe/kibi-community-standalone-5.2.2-beta-1-linux-x64 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chmod -R 777 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chown oafe:oafe /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chmod g+s /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
-      cp -f /opt/oafe/oafeubuntu/conf/kibi/kibi.yml /opt/oafe/kibi/config/kibi.yml  >> $HOME/oafe-install.log || return 1
-      cp -f /opt/oafe/oafeubuntu/conf/systemd/kibi.service /etc/systemd/system/kibi.service  >> $HOME/oafe-install.log || return 1
-      /opt/oafe/kibi/bin/kibi plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
+      cp -f /opt/oafe/oafeserver/conf/kibi/kibi.yml /opt/oafe/kibi/config/kibi.yml  >> $HOME/oafe-install.log || return 1
+      cp -f /opt/oafe/oafeserver/conf/systemd/kibi.service /etc/systemd/system/kibi.service  >> $HOME/oafe-install.log || return 1
+#      /opt/oafe/kibi/bin/kibi plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
       systemctl daemon-reload  >> $HOME/oafe-install.log || return 1
       systemctl enable kibi  >> $HOME/oafe-install.log || return 1
       systemctl start kibi  >> $HOME/oafe-install.log || return 1
     else
-    	echo "kibi-community-standalone-4.6.4-linux-x64.zip not found."
-  fi
+    	echo "kibi-community-standalone-5.2.2-beta-1-linux-x64.zip not found."
+fi
 
 echoinfo "Starting BRO IDS"
     cp -f /opt/oafe/oafeubuntu/conf/bro/node.cfg /etc/bro/node.cfg >> $HOME/oafe-install.log
@@ -867,10 +848,11 @@ echoinfo "Installing Maltrail"
 echoinfo "Installing Moloch DPI"
 	sleep 1m
 	systemctl start elasticsearch
-  if [ -f "/opt/oafe/oafeubuntu/Packages/moloch_0.18.2-1_amd64.deb" ];
+	wget -O /opt/oafe/OAFE/Packages/moloch_0.18.3-1_amd64.deb https://files.molo.ch/builds/ubuntu-16.04/moloch_0.18.3-1_amd64.deb
+  if [ -f "/opt/oafe/oafeubuntu/Packages/moloch_0.18.3-1_amd64.deb" ];
     then
-      echo "moloch_0.18.2-1_amd64.deb found."
-      dpkg -i /opt/oafe/oafeubuntu/Packages/moloch_0.18.2-1_amd64.deb
+      echo "moloch_0.18.3-1_amd64.deb found."
+      dpkg -i /opt/oafe/oafeubuntu/Packages/moloch_0.18.3-1_amd64.deb
       echoinfo "Please choose your capture interface.  On DL380G9, this is eno1.  On mini or Z Workstations, the span port should be the onboard adapter.  It will be eno1"
     	/data/moloch/bin/Configure
     	/data/moloch/db/db.pl http://localhost:9200 init
@@ -887,7 +869,7 @@ echoinfo "Installing Moloch DPI"
     cp -f /opt/oafe/oafeubuntu/conf/moloch/daily.sh /data/moloch/db/daily.sh >> $HOME/oafe-install.log || return 1
     echo "0 1 * * * /data/moloch/db/daily.sh" | tee -a /var/spool/cron/root
     else
-    	echo "moloch_0.18.2-1_amd64.deb not found."
+    	echo "moloch_0.18.3-1_amd64.deb not found."
   fi
 
 echoinfo "Enabling Google Rapid Response Installer"

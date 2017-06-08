@@ -217,6 +217,16 @@ install_ubuntu_16.04_deps() {
     update-java-alternatives -s java-8-oracle
     apt-get install -y oracle-java8-set-default
 
+    echoinfo "Enabling Docker Repository"
+    apt-get install apt-transport-https
+    apt-get-install ca-certificates
+    apt-get-install curl
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
     echoinfo "Enabling the MaxMind GeoIP Repository"
     add-apt-repository -y ppa:maxmind/ppa >> $HOME/oafe-install.log 2>&1 || return 1
 
@@ -259,7 +269,6 @@ install_ubuntu_16.04_packages() {
 afflib-tools
 aircrack-ng
 apache2
-apt-transport-https
 arp-scan
 autoconf
 automake
@@ -286,7 +295,6 @@ cmospwd
 cockpit
 cryptcat
 cryptsetup
-curl
 dc3dd
 dcfldd
 dconf-tools
@@ -711,11 +719,11 @@ echoinfo "Creating oafe directory in /opt/oafe"
 #	passwd root
 #	sh -c 'echo "greeter-show-manual-login=true" >> /etc/lightdm/lightdm.conf'
 
-echoinfo "Cloning Optum OAFE support files to /opt/oafe/oafeubuntu"
-    git clone https://github.com/rebaker501/oafeubuntu.git /opt/oafe/oafeubuntu
-    chown -R $SUDO_USER:$SUDO_USER /opt/oafe/oafeubuntu
-    chmod -R 775 /opt/oafe/oafeubuntu
-    chmod -R g+s /opt/oafe/oafeubuntu
+echoinfo "Cloning Optum OAFE support files to /opt/oafe/OAFE"
+    git clone https://github.com/rebaker501/OAFE.git /opt/oafe/OAFE
+    chown -R $SUDO_USER:$SUDO_USER /opt/oafe/OAFE
+    chmod -R 775 /opt/oafe/OAFE
+    chmod -R g+s /opt/oafe/OAFE
     
 echoinfo "Disable IPv6"
     echo "net.ipv6.conf.all.disable_ipv6 = 1
@@ -724,8 +732,8 @@ echoinfo "Disable IPv6"
     service procps reload
     
 echoinfo "Setting OpenVPN to autostart and autorestart"
-    cp -f /opt/oafe/oafeubuntu/conf/openvpn/openvpn /etc/default/openvpn
-    cp -f /opt/oafe/oafeubuntu/conf/openvpn/openvpn@.service /lib/systemd/system/openvpn@.service
+    cp -f /opt/oafe/OAFE/conf/openvpn/openvpn /etc/default/openvpn
+    cp -f /opt/oafe/OAFE/conf/openvpn/openvpn@.service /lib/systemd/system/openvpn@.service
 
 echoinfo "Enabling Cockpit Monitoring Service on port 9090"
     systemctl enable --now cockpit.socket
@@ -740,42 +748,42 @@ echoinfo "Enabling NGINX Firewall"
     openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
     echoinfo "Please type oafe password and verify"
     htpasswd -c /etc/nginx/conf.d/oafe.htpasswd oafe
-    cp -f /opt/oafe/oafeubuntu/conf/nginx/default-nginx /etc/nginx/sites-available/default
+    cp -f /opt/oafe/OAFE/conf/nginx/default-nginx /etc/nginx/sites-available/default
 
 echoinfo "Creating GeoIP config and downloading current databases"
-    cp /opt/oafe/oafeubuntu/conf/GeoIP/GeoIP.conf /etc/GeoIP.conf >> $HOME/oafe-install.log || return 1
+    cp /opt/oafe/OAFE/conf/GeoIP/GeoIP.conf /etc/GeoIP.conf >> $HOME/oafe-install.log || return 1
     geoipupdate >> $HOME/oafe-install.log || return 1
 
 echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
-    if [ ! -d /opt/oafe/oafeserver/Packages/ ]; then
-        mkdir -p /opt/oafe/oafeserver/Packages/
-        chown oafe:oafe /opt/oafe/oafeserver/Packages/
-        chmod -R 775 /opt/oafe/oafeserver/Packages/
-        chmod -R g+s /opt/oafe/oafeserver/Packages/
+    if [ ! -d /opt/oafe/OAFE/Packages/ ]; then
+        mkdir -p /opt/oafe/OAFE/Packages/
+        chown oafe:oafe /opt/oafe/OAFE/Packages/
+        chmod -R 775 /opt/oafe/OAFE/Packages/
+        chmod -R g+s /opt/oafe/OAFE/Packages/
     fi
     wget -O /opt/oafe/OAFE/Packages/elasticsearch-5.3.2.deb https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.3.2.deb
     wget -O /opt/oafe/OAFE/Packages/kibana-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/kibana/kibana-5.3.2-amd64.deb
     wget -O /opt/oafe/OAFE/Packages/filebeat-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.3.2-amd64.deb
-    dpkg -i /opt/oafe/oafeserver/Packages/elasticsearch-5.2.2.deb
-    dpkg -i /opt/oafe/oafeserver/Packages/filebeat-5.2.2-amd64.deb
-    dpkg -i /opt/oafe/oafeserver/Packages/kibana-5.2.2-amd64.deb
+    dpkg -i /opt/oafe/OAFE/Packages/elasticsearch-5.2.2.deb
+    dpkg -i /opt/oafe/OAFE/Packages/filebeat-5.2.2-amd64.deb
+    dpkg -i /opt/oafe/OAFE/Packages/kibana-5.2.2-amd64.deb
     if [ ! -d /etc/logstash/conf.d/ ]; then
         mkdir -p /etc/logstash/conf.d/
         chown oafe:oafe /etc/logstash/conf.d/
         chmod -R 775 /etc/logstash/conf.d/
         chmod -R g+s /etc/logstash/conf.d/
     fi
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/logstash_kansa_ingest.conf /etc/logstash/conf.d/logstash_kansa_ingest.conf >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-appstats.conf /etc/logstash/conf.d/bro-appstats.conf  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-dns.conf /etc/logstash/conf.d/bro-dns.conf  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-files.conf /etc/logstash/conf.d/bro-files.conf  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/bro-weird.conf /etc/logstash/conf.d/bro-weird.conf  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/logstash_maltrail_sensor.conf /etc/logstash/conf.d/logstash_maltrail_sensor.conf  >> $HOME/oafe-install.log
-#    cp -f /opt/oafe/oafeserver/conf/elasticsearch/elasticsearch.in.sh /usr/share/elasticsearch/bin/ >> $HOME/oafe-install.log
-#    cp -f /opt/oafe/oafeserver/conf/kibana/kibana.yml /opt/kibana/config/kibana.yml  >> $HOME/oafe-install.log || return 1
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/logstash_kansa_ingest.conf /etc/logstash/conf.d/logstash_kansa_ingest.conf >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/bro-appstats.conf /etc/logstash/conf.d/bro-appstats.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/bro-dns.conf /etc/logstash/conf.d/bro-dns.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/bro-files.conf /etc/logstash/conf.d/bro-files.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/bro-weird.conf /etc/logstash/conf.d/bro-weird.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/logstash_maltrail_sensor.conf /etc/logstash/conf.d/logstash_maltrail_sensor.conf  >> $HOME/oafe-install.log
+#    cp -f /opt/oafe/OAFE/conf/elasticsearch/elasticsearch.in.sh /usr/share/elasticsearch/bin/ >> $HOME/oafe-install.log
+#    cp -f /opt/oafe/OAFE/conf/kibana/kibana.yml /opt/kibana/config/kibana.yml  >> $HOME/oafe-install.log || return 1
     #moving over rc.local file
     cp -f /etc/rc.local /etc/rc.local.backup >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeserver/etc/rc.local /etc/rc.local >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/etc/rc.local /etc/rc.local >> $HOME/oafe-install.log
     systemctl daemon-reload
     systemctl enable elasticsearch
     systemctl enable kibana
@@ -784,32 +792,32 @@ echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
     sleep 1m
     systemctl start kibana
     systemctl start filebeat
-    cp -f /opt/oafe/oafeserver/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
-    wget -O /opt/oafe/oafeserver/Packages/logstash-5.3.2.zip https://artifacts.elastic.co/downloads/logstash/logstash-5.3.2.zip
-    unzip /opt/oafe/oafeserver/Packages/logstash-5.3.2.zip -d /opt/oafe/ >> $HOME/oafe-install.log 2>&1
+    cp -f /opt/oafe/OAFE/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
+    wget -O /opt/oafe/OAFE/Packages/logstash-5.3.2.zip https://artifacts.elastic.co/downloads/logstash/logstash-5.3.2.zip
+    unzip /opt/oafe/OAFE/Packages/logstash-5.3.2.zip -d /opt/oafe/ >> $HOME/oafe-install.log 2>&1
     mv -f /opt/oafe/logstash-5.3.2/ /opt/oafe/logstash >> $HOME/oafe-install.log 2>&1
     sudo ln -s -f /opt/oafe/logstash/bin/logstash /usr/bin/logstash >> $HOME/oafe-install.log 2>&1
     sudo ln -s -f /opt/oafe/logstash/bin/logstash-plugin /usr/bin/logstash-plugin >> $HOME/oafe-install.log 2>&1
     sudo ln -s -f /opt/oafe/logstash/bin/logstash.lib.sh /usr/bin/logstash.lib.sh >> $HOME/oafe-install.log 2>&1
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/start /opt/oafe/logstash/start  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/oafeserver/conf/logstash/ingest/stop /opt/oafe/logstash/stop  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/start /opt/oafe/logstash/start  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/stop /opt/oafe/logstash/stop  >> $HOME/oafe-install.log
 /opt/oafe/logstash/bin/logstash-plugin install logstash-filter-translate >> $HOME/oafe-install.log 2>&1
     
 echoinfo "Install Kibi"
 
 wget -O /opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip https://download.support.siren.solutions/kibi/community?file=kibi-community-standalone-5.2.2-beta-1-linux-x64.zip
-if [ -f "/opt/oafe/oafeserver/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip" ];
+if [ -f "/opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip" ];
     then
       echo "kibi-community-standalone-5.2.2-beta-1-linux-x64.zip found."
       chmod -R 775 /opt/oafe/
-      chmod 777 /opt/oafe/oafeserver/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip  >> $HOME/oafe-install.log || return 1
-	  unzip /opt/oafe/oafeserver/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip -d /opt/oafe/ >> $HOME/oafe-install.log || return 1
+      chmod 777 /opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip  >> $HOME/oafe-install.log || return 1
+	  unzip /opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip -d /opt/oafe/ >> $HOME/oafe-install.log || return 1
       mv -f /opt/oafe/kibi-community-standalone-5.2.2-beta-1-linux-x64 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chmod -R 777 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chown oafe:oafe /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chmod g+s /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
-      cp -f /opt/oafe/oafeserver/conf/kibi/kibi.yml /opt/oafe/kibi/config/kibi.yml  >> $HOME/oafe-install.log || return 1
-      cp -f /opt/oafe/oafeserver/conf/systemd/kibi.service /etc/systemd/system/kibi.service  >> $HOME/oafe-install.log || return 1
+      cp -f /opt/oafe/OAFE/conf/kibi/kibi.yml /opt/oafe/kibi/config/kibi.yml  >> $HOME/oafe-install.log || return 1
+      cp -f /opt/oafe/OAFE/conf/systemd/kibi.service /etc/systemd/system/kibi.service  >> $HOME/oafe-install.log || return 1
 #      /opt/oafe/kibi/bin/kibi plugin -i kibana-html-plugin -u https://github.com/raystorm-place/kibana-html-plugin/releases/download/v0.0.3/kibana-html-plugin-v0.0.3.tar.gz
       systemctl daemon-reload  >> $HOME/oafe-install.log || return 1
       systemctl enable kibi  >> $HOME/oafe-install.log || return 1
@@ -819,9 +827,9 @@ if [ -f "/opt/oafe/oafeserver/Packages/kibi-community-standalone-5.2.2-beta-1-li
 fi
 
 echoinfo "Starting BRO IDS"
-    cp -f /opt/oafe/oafeubuntu/conf/bro/node.cfg /etc/bro/node.cfg >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/bro/node.cfg /etc/bro/node.cfg >> $HOME/oafe-install.log
     broctl deploy >> $HOME/oafe-install.log 2>&1
-    cp /opt/oafe/oafeubuntu/etc/cron.d/broctl /etc/cron.d/broctl >> $HOME/oafe-install.log
+    cp /opt/oafe/OAFE/etc/cron.d/broctl /etc/cron.d/broctl >> $HOME/oafe-install.log
 
 echoinfo "Installing Maltrail"
         if [ ! -d /opt/oafe/maltrail ]; then
@@ -843,8 +851,8 @@ echoinfo "Installing Maltrail"
 		chmod -R g+s /var/log/maltrailserver
 	fi
         git clone https://github.com/stamparm/maltrail.git /opt/oafe/maltrail >> $HOME/oafe-install.log 2>&1
-        cp -f /opt/oafe/oafeubuntu/conf/systemd/maltrail-sensor.service /lib/systemd/system/maltrail-sensor.service >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/maltrail/maltrail.conf /opt/oafe/maltrail/maltrail.conf >> $HOME/oafe-install.log || return 1
+        cp -f /opt/oafe/OAFE/conf/systemd/maltrail-sensor.service /lib/systemd/system/maltrail-sensor.service >> $HOME/oafe-install.log || return 1
+        cp -f /opt/oafe/OAFE/conf/maltrail/maltrail.conf /opt/oafe/maltrail/maltrail.conf >> $HOME/oafe-install.log || return 1
         systemctl daemon-reload >> $HOME/oafe-install.log || return 1
         systemctl enable maltrail-sensor >> $HOME/oafe-install.log || return 1
 
@@ -852,15 +860,15 @@ echoinfo "Installing Moloch DPI"
 	sleep 1m
 	systemctl start elasticsearch
 	wget -O /opt/oafe/OAFE/Packages/moloch_0.18.3-1_amd64.deb https://files.molo.ch/builds/ubuntu-16.04/moloch_0.18.3-1_amd64.deb
-  if [ -f "/opt/oafe/oafeubuntu/Packages/moloch_0.18.3-1_amd64.deb" ];
+  if [ -f "/opt/oafe/OAFE/Packages/moloch_0.18.3-1_amd64.deb" ];
     then
       echo "moloch_0.18.3-1_amd64.deb found."
-      dpkg -i /opt/oafe/oafeubuntu/Packages/moloch_0.18.3-1_amd64.deb
+      dpkg -i /opt/oafe/OAFE/Packages/moloch_0.18.3-1_amd64.deb
       echoinfo "Please choose your capture interface.  On DL380G9, this is eno1.  On mini or Z Workstations, the span port should be the onboard adapter.  It will be eno1"
     	/data/moloch/bin/Configure
     	/data/moloch/db/db.pl http://localhost:9200 init
     	/data/moloch/bin/moloch_add_user.sh admin admin changeme! --admin
-    	cp -f /opt/oafe/oafeubuntu/conf/moloch/config.ini /data/moloch/etc/config.inie >> $HOME/oafe-install.log || return 1
+    	cp -f /opt/oafe/OAFE/conf/moloch/config.ini /data/moloch/etc/config.inie >> $HOME/oafe-install.log || return 1
       #this line changes the path to ethtool from /usr/sbin/ to just /sbin/
       sed -i.bak 's_ExecStartPre=-/usr/sbin/ethtool_ExecStartPre=-/sbin/ethtool_g' /etc/systemd/system/molochcapture.service
       systemctl daemon-reload
@@ -869,7 +877,7 @@ echoinfo "Installing Moloch DPI"
     	sleep 1m
     	systemctl start molochcapture.service
     	systemctl start molochviewer.service
-    cp -f /opt/oafe/oafeubuntu/conf/moloch/daily.sh /data/moloch/db/daily.sh >> $HOME/oafe-install.log || return 1
+    cp -f /opt/oafe/OAFE/conf/moloch/daily.sh /data/moloch/db/daily.sh >> $HOME/oafe-install.log || return 1
     echo "0 1 * * * /data/moloch/db/daily.sh" | tee -a /var/spool/cron/root
     else
     	echo "moloch_0.18.3-1_amd64.deb not found."
@@ -892,52 +900,31 @@ echoinfo "Install Kansa Files for Threat Hunting"
         chmod -R 775 /opt/oafe/kansa
         chmod -R g+s /opt/oafe/kansa
     fi
-    cp -f /opt/oafe/oafeubuntu/conf/logstash/ingest/logstash_kansa_ingest.conf /etc/logstash/conf.d/logstash_kansa_ingest.conf
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/logstash_kansa_ingest.conf /etc/logstash/conf.d/logstash_kansa_ingest.conf
     git clone https://github.com/davehull/Kansa /opt/oafe/kansa
 
-echoinfo "Install VNC Server"
-    if [ ! -d /opt/oafe/vncserver ]; then
-        mkdir -p /opt/oafe/vncserver
-        chown $SUDO_USER:$SUDO_USER /opt/oafe/vncserver
-        chmod 775 /opt/oafe/vncserver
-        chmod g+s /opt/oafe/vncserver
-    fi
-    if [ -f "/opt/oafe/oafeubuntu/Packages/VNC-Server-5.3.2-Linux-x64.deb" ];
-    then
-      echo "VNC-Server-5.3.2-Linux-x64.deb found."
-      dpkg -i /opt/oafe/oafeubuntu/Packages/VNC-Server-5.3.2-Linux-x64.deb  >> $HOME/oafe-install.log || return 1
-      vnclicense -add JBBA2-64NYS-4Q322-3HTGZ-LU3NA
-      systemctl enable vncserver-x11-serviced.service  >> $HOME/oafe-install.log || return 1
-      systemctl start vncserver-virtuald.service  >> $HOME/oafe-install.log || return 1
-    else
-    	echo "VNC-Server-5.3.2-Linux-x64.deb not found."
-    fi
-    if [ -f "/opt/oafe/oafeubuntu/Packages/VNC-Viewer-5.3.2-Linux-x64.deb" ];
-    then
-      echo "VNC-Viewer-5.3.2-Linux-x64.deb found."
-      dpkg -i /opt/oafe/oafeubuntu/Packages/VNC-Viewer-5.3.2-Linux-x64.deb  >> $HOME/oafe-install.log || return 1
-    else
-    	echo "VNC-Viewer-5.3.2-Linux-x64.deb not found."
-    fi
+echoinfo "Install Fast Incident Response Docker Build"
+    docker build -t fir /opt/oafe/OAFE/FIR/Dockerfile
+
 
 echoinfo "Install Viper Framework"
     git clone https://github.com/viper-framework/viper /opt/oafe/viper >> $HOME/oafe-install.log || return 1
     chmod -R 775 /opt/oafe/viper >> $HOME/oafe-install.log || return 1
     chown oafe:oafe /opt/oafe/viper >> $HOME/oafe-install.log || return 1
     chmod g+s /opt/oafe/viper >> $HOME/oafe-install.log || return 1
-    cp -f /opt/oafe/oafeubuntu/conf/systemd/viperweb.service /etc/systemd/system/viperweb.service >> $HOME/oafe-install.log || return 1
-    cp -f /opt/oafe/oafeubuntu/conf/systemd/viper.service /etc/systemd/system/viper.service >> $HOME/oafe-install.log || return 1
+    cp -f /opt/oafe/OAFE/conf/systemd/viperweb.service /etc/systemd/system/viperweb.service >> $HOME/oafe-install.log || return 1
+    cp -f /opt/oafe/OAFE/conf/systemd/viper.service /etc/systemd/system/viper.service >> $HOME/oafe-install.log || return 1
 
 #echoinfo "Changing Ubuntu Launcher icons...Cmon, you don't really need the Amazon shopping app on here!!"
-#    chmod 777 /opt/oafe/oafeubuntu/utilities/launcherctl.py
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -r -f libreoffice-writer.desktop
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -r -f libreoffice-calc.desktop
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -r -f org.gnome.Software.desktop
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -r -f ubuntu-amazon-default.desktop
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -a -f gnome-terminal.desktop
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -a -f chromium-browser.desktop
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -a -f virtualbox.desktop
-#    sudo -u oafe /opt/oafe/oafeubuntu/utilities/launcherctl.py -a -f gedit.desktop
+#    chmod 777 /opt/oafe/OAFE/utilities/launcherctl.py
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -r -f libreoffice-writer.desktop
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -r -f libreoffice-calc.desktop
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -r -f org.gnome.Software.desktop
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -r -f ubuntu-amazon-default.desktop
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -a -f gnome-terminal.desktop
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -a -f chromium-browser.desktop
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -a -f virtualbox.desktop
+#    sudo -u oafe /opt/oafe/OAFE/utilities/launcherctl.py -a -f gedit.desktop
 
 echoinfo "Enabling ntop netflow capture services"
     systemctl daemon-reload >> $HOME/oafe-install.log || return 1
@@ -1121,7 +1108,7 @@ configure_ubuntu_sift_vm() {
 	# Clean up broken symlinks
 	find -L $HOME/Desktop -type l -delete
 
-  echoinfo "SIFT VM: Adding all SIFT Resources to $SUDO_USER Desktop"
+  echoinfo "OAFE VM: Adding all OAFE Resources to $SUDO_USER Desktop"
 	for file in /usr/share/sift/resources/*.pdf
 	do
 		base=`basename $file`
@@ -1150,7 +1137,7 @@ configure_ubuntu_16.04_sift_vm() {
   sudo -u $SUDO_USER gsettings set com.canonical.Unity.Launcher favorites "['application://nautilus.desktop', 'application://gnome-terminal.desktop', 'application://firefox.desktop', 'application://gnome-screenshot.desktop', 'application://gcalctool.desktop', 'application://bless.desktop', 'application://autopsy.desktop', 'application://wireshark.desktop']" >> $HOME/oafe-install.log 2>&1
 
   # Works in 12.04 and 16.04
-  sudo -u $SUDO_USER gsettings set org.gnome.desktop.background picture-uri file:///opt/oafe/oafeubuntu/branding/OAFE_Background_1920_1080.jpg >> $HOME/oafe-install.log 2>&1
+  sudo -u $SUDO_USER gsettings set org.gnome.desktop.background picture-uri file:///opt/oafe/OAFE/branding/OAFE_Background_1920_1080.jpg >> $HOME/oafe-install.log 2>&1
 
   # Works in 16.04
 	if [ ! -d $HOME/.config/autostart ]; then
@@ -1172,7 +1159,7 @@ configure_ubuntu_16.04_sift_vm() {
   sudo -u $SUDO_USER dconf write /desktop/unity/launcher/favorites "['nautilus.desktop', 'gnome-terminal.desktop', 'firefox.desktop', 'gnome-screenshot.desktop', 'gcalctool.desktop', 'bless.desktop', 'autopsy.desktop', 'wireshark.desktop']" >> $HOME/oafe-install.log 2>&1
 
   # Setup the login background image
-  cp /opt/oafe/oafeubuntu/branding/OAFE_Background_1920_1080.jpg /usr/share/backgrounds/warty-final-ubuntu.png
+  cp /opt/oafe/OAFE/branding/OAFE_Background_1920_1080.jpg /usr/share/backgrounds/warty-final-ubuntu.png
 
   chown -R $SUDO_USER:$SUDO_USER $HOME
 }
@@ -1209,65 +1196,39 @@ install_cuckoo_sandbox() {
 	 	chmod -R 775 /var/log/cuckooapi
 		chmod -R g+s /var/log/cuckooapi
 	fi
-		apt-get install -y virtualbox-5.1
+        if [ ! -d /opt/oafe/cuckoo ]; then
+        mkdir -p /opt/oafe/cuckoo
+        chown cuckoo:cuckoo /opt/oafe/cuckoo
+        chmod -R 775 /opt/oafe/cuckoo
+        chmod -R g+s /opt/oafe/cuckoo
+    fi
         usermod -a -G vboxusers oafe
-        wget -O /opt/oafe/cuckoodeps/distorm3.zip https://github.com/gdabah/distorm/archive/v3.3.0.zip
-        wget -O /opt/oafe/cuckoodeps/pycrypto-2.6.1.tar.gz https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-2.6.1.tar.gz
-        wget -O /opt/oafe/cuckoodeps/yara-v3.4.0.tar.gz https://github.com/plusvic/yara/archive/v3.4.0.tar.gz
-        wget -O /opt/oafe/cuckoodeps/setuptools-5.7.tar.gz https://pypi.python.org/packages/source/s/setuptools/setuptools-5.7.tar.gz
-        wget -O /opt/oafe/cuckoodeps/openpyxl-2.3.0.tar.gz https://bitbucket.org/openpyxl/openpyxl/get/2.3.0.tar.gz
-        wget -O /opt/oafe/cuckoodeps/ipython-2.4.1.tar.gz https://pypi.python.org/packages/source/i/ipython/ipython-2.4.1.tar.gz
+        usermod -a -G vboxusers cuckoo
         wget -O /opt/oafe/cuckoodeps/volatility-2.6.zip http://downloads.volatilityfoundation.org/releases/2.6/volatility-2.6.zip
         cd /opt/oafe/cuckoodeps
-        unzip distorm3.zip
-        tar xvfz pycrypto-2.6.1.tar.gz
-        tar xvfz yara-v3.4.0.tar.gz
-        tar xvfz setuptools-5.7.tar.gz
-        tar xvfz openpyxl-2.3.0.tar.gz
-        tar xvfz ipython-2.4.1.tar.gz
         unzip volatility-2.6.zip
-        cd /opt/oafe/cuckoodeps/distorm-3.3.0
-        python setup.py build install
-        cd /opt/oafe/cuckoodeps/yara-3.4.0
-        chmod +x bootstrap.sh && ./bootstrap.sh && ./configure --enable-magic --enable-cuckoo ; make ; make install
-        cd yara-python && python setup.py build install && ldconfig && cd /opt/oafe/cuckoodeps
-        cd /opt/oafe/cuckoodeps/setuptools-5.7 && python ez_setup.py && cd /opt/oafe/cuckoodeps
-        cd openpyxl-openpyxl-17ebc853f530 && python setup.py build install && cd /opt/oafe/cuckoodeps
-        easy_install --upgrade pytz
-        cd ipython-2.4.1 && python setup.py build install && cd /opt/oafe/cuckoodeps
         mv -f volatility-master .. ; cd ../volatility-master && chmod +x vol.py
         ln -f -s "${PWD}"/vol.py /usr/local/bin/vol.py
+        sysctl -w net.ipv4.ip_forward=1 >> $HOME/oafe-install.log || return 1
+        setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump >> $HOME/oafe-install.log || return 1
         mysql -uroot -pchangeme! -e "CREATE DATABASE cuckoo" >> $HOME/oafe-install.log || return 1
         mysql -uroot -pchangeme! -e "GRANT ALL PRIVILEGES ON *.* TO cuckoo@localhost IDENTIFIED BY 'changeme!'" >> $HOME/oafe-install.log || return 1
         mysql -uroot -pchangeme! -e "FLUSH PRIVILEGES" >> $HOME/oafe-install.log || return 1
-        git clone https://github.com/cuckoosandbox/cuckoo /opt/oafe/cuckoo
-        chmod -R 775 /opt/oafe/cuckoo  >> $HOME/oafe-install.log || return 1
-        chmod -R g+s /opt/oafe/cuckoo  >> $HOME/oafe-install.log || return 1
-        if [ ! -d /opt/oafe/cuckoo/uwsgi ]; then
-        	mkdir -p /opt/oafe/cuckoo/uwsgi
-        	chown $SUDO_USER:$SUDO_USER /opt/oafe/cuckoo/uwsgi
-        	chmod -R 775 /opt/oafe/cuckoo/uwsgi
-        	chmod -R g+s /opt/oafe/cuckoo/uwsgi
-    	fi
+        pip install -U cuckoo
+#        if [ ! -d /opt/oafe/cuckoo/uwsgi ]; then
+#        	mkdir -p /opt/oafe/cuckoo/uwsgi
+#        	chown $SUDO_USER:$SUDO_USER /opt/oafe/cuckoo/uwsgi
+#        	chmod -R 775 /opt/oafe/cuckoo/uwsgi
+#        	chmod -R g+s /opt/oafe/cuckoo/uwsgi
+#    	fi
+        cuckoo --cwd /opt/oafe/cuckoo
+        wget - O /opt/oafe/cuckoodeps/sdk-tools-linux-3859397.zip https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
         vboxmanage hostonlyif create >> $HOME/oafe-install.log || return 1
         ip link set vboxnet0 up >> $HOME/oafe-install.log || return 1
 	    ip addr add 192.168.56.1/24 dev vboxnet0
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/rules.v4 /etc/iptables/rules.v4 >> $HOME/oafe-install.log || return 1
-        sysctl -w net.ipv4.ip_forward=1 >> $HOME/oafe-install.log || return 1
-        setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/supervisor/supervisord.conf /etc/supervisor/supervisord.conf>> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/sysctl.conf /etc/sysctl.conf >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/django.ini /opt/oafe/cuckoo/uwsgi/django.ini >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/api.ini /opt/oafe/cuckoo/uwsgi/api.ini >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/cuckoo.conf /opt/oafe/cuckoo/conf/cuckoo.conf >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/processing.conf /opt/oafe/cuckoo/conf/processing.conf >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/auxiliary.conf /opt/oafe/cuckoo/conf/auxiliary.conf >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/memory.conf /opt/oafe/cuckoo/conf/memory.conf >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/reporting.conf /opt/oafe/cuckoo/conf/reporting.conf >> $HOME/oafe-install.log || return 1
-        cp -f /opt/oafe/oafeubuntu/conf/cuckoo/virtualbox.conf /opt/oafe/cuckoo/conf/virtualbox.conf >> $HOME/oafe-install.log || return 1
-        python /opt/oafe/cuckoo/utils/community.py -a -f -w >> $HOME/oafe-install.log || return 1
+        cp -f /opt/oafe/OAFE/conf/cuckoo/rules.v4 /etc/iptables/rules.v4 >> $HOME/oafe-install.log || return 1
+#        python /opt/oafe/cuckoo/utils/community.py -a -f -w >> $HOME/oafe-install.log || return 1
         systemctl daemon-reload >> $HOME/oafe-install.log || return 1
-        systemctl restart supervisor >> $HOME/oafe-install.log || return 1
 }
 
 configure_virtualbox_vms() {
@@ -1325,8 +1286,6 @@ CONFIGURE_ONLY=0
 SKIN=0
 INSTALL=1
 YESTOALL=0
-DOWNLOAD_VMs=0
-DOWNLOAD_FIR=0
 CONFIGURE_CUCKOO=0
 
 OS=$(lsb_release -si)
@@ -1375,8 +1334,6 @@ case "${opt}" in
     c ) CONFIGURE_ONLY=1; INSTALL=0; SKIN=0; ;;
     u ) UPGRADE_ONLY=1; ;;
     y ) YESTOALL=1 ;;
-    d ) DOWNLOAD_VMs=1 ;;
-    t ) DOWNLOAD_FIR=1 ;;
     m ) CONFIGURE_CUCKOO=1 ;;
     \?) echo
         echoerror "Option does not exist: $OPTARG"
@@ -1454,14 +1411,6 @@ if [ "$INSTALL" -eq 1 ] && [ "$CONFIGURE_ONLY" -eq 0 ]; then
     configure_cpan
     install_perl_modules
     install_sift_files
-fi
-
-if [ "$DOWNLOAD_VMs" -eq 1 ]; then
-    configure_virtualbox_vms
-fi
-
-if [ "$DOWNLOAD_FIR" -eq 1 ]; then
-    configure_fastincidentresponse_vm
 fi
 
 if [ "$CONFIGURE_CUCKOO" -eq 1 ]; then

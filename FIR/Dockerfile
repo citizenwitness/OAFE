@@ -6,9 +6,9 @@
 # build with the command:
 #
 # sudo docker build -t fir .
-# sudo docker run -it -p 8000:8000 fir
+# sudo docker run -it -p 8002:8002 fir
 #
-# then access http://localhost:8000 in your browser
+# then access http://localhost:8002 in your browser
 
 # MAINTAINER Robert Haist, SleuthKid@mailbox.org
 FROM alpine:3.4
@@ -50,4 +50,4 @@ RUN ./manage.py migrate && \
 
 EXPOSE 8000
 ENTRYPOINT ["/app/FIR/manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+CMD ["runserver", "0.0.0.0:8002"]

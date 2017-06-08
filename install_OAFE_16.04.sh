@@ -301,8 +301,7 @@ dconf-tools
 debconf-utils
 dh-autoreconf
 dkms
-docker-engine
-docker.io
+docker-ce
 dos2unix
 driftnet
 dsniff

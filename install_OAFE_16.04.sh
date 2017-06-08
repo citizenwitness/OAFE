@@ -765,7 +765,7 @@ echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
     cp -f /opt/oafe/OAFE/conf/logstash/ingest/bro-dns.conf /etc/logstash/conf.d/bro-dns.conf  >> $HOME/oafe-install.log
     cp -f /opt/oafe/OAFE/conf/logstash/ingest/bro-files.conf /etc/logstash/conf.d/bro-files.conf  >> $HOME/oafe-install.log
     cp -f /opt/oafe/OAFE/conf/logstash/ingest/bro-weird.conf /etc/logstash/conf.d/bro-weird.conf  >> $HOME/oafe-install.log
-    cp -f /opt/oafe/OAFE/conf/logstash/ingest/logstash_maltrail_sensor.conf /etc/logstash/conf.d/logstash_maltrail_sensor.conf  >> $HOME/oafe-install.log
+    cp -f /opt/oafe/OAFE/conf/logstash/ingest/sensor.conf /etc/logstash/conf.d/logstash_maltrail_sensor.conf  >> $HOME/oafe-install.log
 #    cp -f /opt/oafe/OAFE/conf/elasticsearch/elasticsearch.in.sh /usr/share/elasticsearch/bin/ >> $HOME/oafe-install.log
 #    cp -f /opt/oafe/OAFE/conf/kibana/kibana.yml /opt/kibana/config/kibana.yml  >> $HOME/oafe-install.log || return 1
     #moving over rc.local file

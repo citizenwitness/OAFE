@@ -48,6 +48,6 @@ RUN ./manage.py migrate && \
     ./manage.py loaddata incidents/fixtures/seed_data.json && \
     ./manage.py loaddata incidents/fixtures/dev_users.json
 
-EXPOSE 8000
+EXPOSE 8002
 ENTRYPOINT ["/app/FIR/manage.py"]
 CMD ["runserver", "0.0.0.0:8002"]

@@ -916,6 +916,72 @@ echoinfo "Install Viper Framework"
 echoinfo "Enabling ntop netflow capture services"
     systemctl daemon-reload >> $HOME/oafe-install.log || return 1
     systemctl enable ntopng >> $HOME/oafe-install.log || return 1
+    
+echoinfo "Installing Cuckoo Sandbox"
+sleep 1m
+        if [ ! -d /opt/oafe/VMs ]; then
+		mkdir -p /opt/oafe/VMs
+		chown $SUDO_USER:$SUDO_USER /opt/oafe/VMs
+	 	chmod -R 775 /opt/oafe/VMs
+		chmod -R g+s /opt/oafe/VMs
+	fi
+        if [ ! -d /opt/oafe/cuckoodeps ]; then
+		mkdir -p /opt/oafe/cuckoodeps
+		chown $SUDO_USER:$SUDO_USER /opt/oafe/cuckoodeps
+	 	chmod -R 775 /opt/oafe/cuckoodeps
+		chmod -R g+s /opt/oafe/cuckoodeps
+	fi
+        if [ ! -d /var/log/cuckooweb ]; then
+		mkdir -p /var/log/cuckooweb
+		chown $SUDO_USER:$SUDO_USER /var/log/cuckooweb
+	 	chmod -R 775 /var/log/cuckooweb
+		chmod -R g+s /var/log/cuckooweb
+	fi
+        if [ ! -d /var/log/cuckoo ]; then
+		mkdir -p /var/log/cuckoo
+		chown $SUDO_USER:$SUDO_USER /var/log/cuckoo
+	 	chmod -R 775 /var/log/cuckoo
+		chmod -R g+s /var/log/cuckoo
+	fi
+        if [ ! -d /var/log/cuckooapi ]; then
+		mkdir -p /var/log/cuckooapi
+		chown $SUDO_USER:$SUDO_USER /var/log/cuckooapi
+	 	chmod -R 775 /var/log/cuckooapi
+		chmod -R g+s /var/log/cuckooapi
+	fi
+        if [ ! -d /opt/oafe/cuckoo ]; then
+        mkdir -p /opt/oafe/cuckoo
+        chown cuckoo:cuckoo /opt/oafe/cuckoo
+        chmod -R 775 /opt/oafe/cuckoo
+        chmod -R g+s /opt/oafe/cuckoo
+    fi
+        usermod -a -G vboxusers oafe
+        usermod -a -G vboxusers cuckoo
+        wget -O /opt/oafe/cuckoodeps/volatility-2.6.zip http://downloads.volatilityfoundation.org/releases/2.6/volatility-2.6.zip
+        cd /opt/oafe/cuckoodeps
+        unzip volatility-2.6.zip
+        mv -f volatility-master .. ; cd ../volatility-master && chmod +x vol.py
+        ln -f -s "${PWD}"/vol.py /usr/local/bin/vol.py
+        sysctl -w net.ipv4.ip_forward=1 >> $HOME/oafe-install.log || return 1
+        setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump >> $HOME/oafe-install.log || return 1
+        mysql -uroot -pchangeme! -e "CREATE DATABASE cuckoo" >> $HOME/oafe-install.log || return 1
+        mysql -uroot -pchangeme! -e "GRANT ALL PRIVILEGES ON *.* TO cuckoo@localhost IDENTIFIED BY 'changeme!'" >> $HOME/oafe-install.log || return 1
+        mysql -uroot -pchangeme! -e "FLUSH PRIVILEGES" >> $HOME/oafe-install.log || return 1
+        pip install -U cuckoo
+#        if [ ! -d /opt/oafe/cuckoo/uwsgi ]; then
+#        	mkdir -p /opt/oafe/cuckoo/uwsgi
+#        	chown $SUDO_USER:$SUDO_USER /opt/oafe/cuckoo/uwsgi
+#        	chmod -R 775 /opt/oafe/cuckoo/uwsgi
+#        	chmod -R g+s /opt/oafe/cuckoo/uwsgi
+#    	fi
+        cuckoo --cwd /opt/oafe/cuckoo
+        wget - O /opt/oafe/cuckoodeps/sdk-tools-linux-3859397.zip https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+        vboxmanage hostonlyif create >> $HOME/oafe-install.log || return 1
+        ip link set vboxnet0 up >> $HOME/oafe-install.log || return 1
+	    ip addr add 192.168.56.1/24 dev vboxnet0
+        cp -f /opt/oafe/OAFE/conf/cuckoo/rules.v4 /etc/iptables/rules.v4 >> $HOME/oafe-install.log || return 1
+#        python /opt/oafe/cuckoo/utils/community.py -a -f -w >> $HOME/oafe-install.log || return 1
+systemctl daemon-reload >> $HOME/oafe-install.log || return 1
 
 echoinfo "OAFE VM: Creating Cases Folder"
     if [ ! -d /cases ]; then
@@ -1153,97 +1219,9 @@ configure_ubuntu_16.04_sift_vm() {
 
 install_cuckoo_sandbox() {
 	echoinfo "Installing Cuckoo Sandbox"
-        if [ ! -d /opt/oafe/VMs ]; then
-		mkdir -p /opt/oafe/VMs
-		chown $SUDO_USER:$SUDO_USER /opt/oafe/VMs
-	 	chmod -R 775 /opt/oafe/VMs
-		chmod -R g+s /opt/oafe/VMs
-	fi
-        if [ ! -d /opt/oafe/cuckoodeps ]; then
-		mkdir -p /opt/oafe/cuckoodeps
-		chown $SUDO_USER:$SUDO_USER /opt/oafe/cuckoodeps
-	 	chmod -R 775 /opt/oafe/cuckoodeps
-		chmod -R g+s /opt/oafe/cuckoodeps
-	fi
-        if [ ! -d /var/log/cuckooweb ]; then
-		mkdir -p /var/log/cuckooweb
-		chown $SUDO_USER:$SUDO_USER /var/log/cuckooweb
-	 	chmod -R 775 /var/log/cuckooweb
-		chmod -R g+s /var/log/cuckooweb
-	fi
-        if [ ! -d /var/log/cuckoo ]; then
-		mkdir -p /var/log/cuckoo
-		chown $SUDO_USER:$SUDO_USER /var/log/cuckoo
-	 	chmod -R 775 /var/log/cuckoo
-		chmod -R g+s /var/log/cuckoo
-	fi
-        if [ ! -d /var/log/cuckooapi ]; then
-		mkdir -p /var/log/cuckooapi
-		chown $SUDO_USER:$SUDO_USER /var/log/cuckooapi
-	 	chmod -R 775 /var/log/cuckooapi
-		chmod -R g+s /var/log/cuckooapi
-	fi
-        if [ ! -d /opt/oafe/cuckoo ]; then
-        mkdir -p /opt/oafe/cuckoo
-        chown cuckoo:cuckoo /opt/oafe/cuckoo
-        chmod -R 775 /opt/oafe/cuckoo
-        chmod -R g+s /opt/oafe/cuckoo
-    fi
-        usermod -a -G vboxusers oafe
-        usermod -a -G vboxusers cuckoo
-        wget -O /opt/oafe/cuckoodeps/volatility-2.6.zip http://downloads.volatilityfoundation.org/releases/2.6/volatility-2.6.zip
-        cd /opt/oafe/cuckoodeps
-        unzip volatility-2.6.zip
-        mv -f volatility-master .. ; cd ../volatility-master && chmod +x vol.py
-        ln -f -s "${PWD}"/vol.py /usr/local/bin/vol.py
-        sysctl -w net.ipv4.ip_forward=1 >> $HOME/oafe-install.log || return 1
-        setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump >> $HOME/oafe-install.log || return 1
-        mysql -uroot -pchangeme! -e "CREATE DATABASE cuckoo" >> $HOME/oafe-install.log || return 1
-        mysql -uroot -pchangeme! -e "GRANT ALL PRIVILEGES ON *.* TO cuckoo@localhost IDENTIFIED BY 'changeme!'" >> $HOME/oafe-install.log || return 1
-        mysql -uroot -pchangeme! -e "FLUSH PRIVILEGES" >> $HOME/oafe-install.log || return 1
-        pip install -U cuckoo
-#        if [ ! -d /opt/oafe/cuckoo/uwsgi ]; then
-#        	mkdir -p /opt/oafe/cuckoo/uwsgi
-#        	chown $SUDO_USER:$SUDO_USER /opt/oafe/cuckoo/uwsgi
-#        	chmod -R 775 /opt/oafe/cuckoo/uwsgi
-#        	chmod -R g+s /opt/oafe/cuckoo/uwsgi
-#    	fi
-        cuckoo --cwd /opt/oafe/cuckoo
-        wget - O /opt/oafe/cuckoodeps/sdk-tools-linux-3859397.zip https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
-        vboxmanage hostonlyif create >> $HOME/oafe-install.log || return 1
-        ip link set vboxnet0 up >> $HOME/oafe-install.log || return 1
-	    ip addr add 192.168.56.1/24 dev vboxnet0
-        cp -f /opt/oafe/OAFE/conf/cuckoo/rules.v4 /etc/iptables/rules.v4 >> $HOME/oafe-install.log || return 1
-#        python /opt/oafe/cuckoo/utils/community.py -a -f -w >> $HOME/oafe-install.log || return 1
-        systemctl daemon-reload >> $HOME/oafe-install.log || return 1
+        
 }
 
-configure_virtualbox_vms() {
-
-echoinfo "Downloading and installing Cuckoo Analysis VMs...this could take a while ~7GB"
-        if [ ! -d /opt/oafe/VMs ]; then
-	      	mkdir -p /opt/oafe/VMs
-		chown $SUDO_USER:$SUDO_USER /opt/oafe/VMs
-	 	chmod 775 /opt/oafe/VMs
-		chmod g+s /opt/oafe/VMs
-	fi
-        wget https://www.dropbox.com/s/jtcwcytfo7syb3b/Windows7x64VLSandbox1.ova?dl=0 -O /opt/oafe/VMs/Windows7x64VLSandbox1.ova | tee -a "$HOME/oafe-install.log"
-        export VBOX_USER_HOME=/opt/oafe/VMs
-        vboxmanage hostonlyif create
-        vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1
-        iptables -A FORWARD -o eth0 -i vboxnet0 -s 192.168.56.0/24 -m conntrack --ctstate NEW -j ACCEPT
-        iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-        iptables -A POSTROUTING -t nat -j MASQUERADE
-        sysctl -w net.ipv4.ip_forward=1
-        sudo -u oafe vboxmanage import /opt/oafe/VMs/Windows7x64VLSandbox1.ova
-}
-
-configure_fastincidentresponse_vm() {
-    echoinfo "Downloading and importing Fast Incident Response VM"
-    wget https://www.dropbox.com/s/mgig4r6bzcgzgbu/FIR-VBox-Template.ova?dl=0 -O /opt/oafe/VMs/FIR-VBox-Template.ova | tee -a "$HOME/oafe-install.log"
-    export VBOX_USER_HOME=/opt/oafe/VMs
-    sudo -u oafe vboxmanage import /opt/oafe/VMs/FIR-VBox-Template.ova
-}
 
 complete_message() {
     echo

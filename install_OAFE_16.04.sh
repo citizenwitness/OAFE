@@ -891,8 +891,8 @@ echoinfo "Install Kansa Files for Threat Hunting"
     git clone https://github.com/davehull/Kansa /opt/oafe/kansa
 
 echoinfo "Install Fast Incident Response Docker Build"
-    docker build -t fir /opt/oafe/OAFE/FIR/Dockerfile
-
+    cd /opt/oafe/OAFE/FIR	
+    docker build -t fir .
 
 echoinfo "Install Viper Framework"
     git clone https://github.com/viper-framework/viper /opt/oafe/viper >> $HOME/oafe-install.log || return 1

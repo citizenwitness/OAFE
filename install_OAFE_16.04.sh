@@ -195,7 +195,8 @@ install_ubuntu_16.04_deps() {
     wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add ->> $HOME/oafe-install.log 2>&1 || return 1
 
     echoinfo "Adding Ntopng stable repository"
-    wget http://apt-stable.ntop.org/16.04/all/apt-ntop-stable.deb | dpkg -i apt-ntop-stable.deb >> $HOME/oafe-install.log 2>&1 || return 1
+	wget -O /home/oafe/apt-ntop-stable.deb http://apt-stable.ntop.org/16.04/all/apt-ntop-stable.deb  >> $HOME/oafe-install.log || return 1
+    dpkg -i /home/oafe/apt-ntop-stable.deb
     
     echoinfo "Enabling Draios repository for Sysdig"
     wget -q -O - https://s3.amazonaws.com/download.draios.com/DRAIOS-GPG-KEY.public | apt-key add -   >> $HOME/oafe-install.log 2>&1 || return 1
@@ -217,16 +218,6 @@ install_ubuntu_16.04_deps() {
     update-java-alternatives -s java-8-oracle
     apt-get install -y oracle-java8-set-default
 
-    echoinfo "Enabling Docker Repository"
-    apt-get install apt-transport-https
-    apt-get-install ca-certificates
-    apt-get-install curl
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-
     echoinfo "Enabling the MaxMind GeoIP Repository"
     add-apt-repository -y ppa:maxmind/ppa >> $HOME/oafe-install.log 2>&1 || return 1
 
@@ -242,10 +233,6 @@ install_ubuntu_16.04_deps() {
     apt-key adv --keyserver keyserver.ubuntu.com --recv 68576280 >> $HOME/oafe-install.log || return 1
     apt-add-repository -y 'deb https://deb.nodesource.com/node_4.x precise main' >> $HOME/oafe-install.log || return 1
 
-        echoinfo "Enabling GrayLog repository"
-        wget https://packages.graylog2.org/repo/packages/graylog-2.2-repository_latest.deb  >> $HOME/oafe-install.log || return 1
-        dpkg -i graylog-2.2-repository_latest.deb >> $HOME/oafe-install.log 2>&1  || return 1
-	
 #echoinfo "Enabling Puppet repository"
 #        wget https://apt.puppetlabs.com/puppetlabs-release-trusty.deb  >> $HOME/oafe-install.log #|| return 1
 #        dpkg -i puppetlabs-release-trusty.deb

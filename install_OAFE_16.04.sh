@@ -751,9 +751,9 @@ echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
     wget -O /opt/oafe/OAFE/Packages/elasticsearch-5.3.2.deb https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.3.2.deb
     wget -O /opt/oafe/OAFE/Packages/kibana-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/kibana/kibana-5.3.2-amd64.deb
     wget -O /opt/oafe/OAFE/Packages/filebeat-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.3.2-amd64.deb
-    dpkg -i /opt/oafe/OAFE/Packages/elasticsearch-5.2.2.deb
-    dpkg -i /opt/oafe/OAFE/Packages/filebeat-5.2.2-amd64.deb
-    dpkg -i /opt/oafe/OAFE/Packages/kibana-5.2.2-amd64.deb
+    dpkg -i /opt/oafe/OAFE/Packages/elasticsearch-5.3.2.deb
+    dpkg -i /opt/oafe/OAFE/Packages/filebeat-5.3.2-amd64.deb
+    dpkg -i /opt/oafe/OAFE/Packages/kibana-5.3.2-amd64.deb
     if [ ! -d /etc/logstash/conf.d/ ]; then
         mkdir -p /etc/logstash/conf.d/
         chown oafe:oafe /etc/logstash/conf.d/

@@ -838,9 +838,11 @@ echoinfo "Installing Maltrail"
 		chmod -R g+s /var/log/maltrailserver
 	fi
         git clone https://github.com/stamparm/maltrail.git /opt/oafe/maltrail >> $HOME/oafe-install.log 2>&1
+	cp -f /opt/oafe/OAFE/conf/systemd/maltrailserver.service /lib/systemd/system/maltrailserver.service >> $HOME/oafe-install.log || return 1
         cp -f /opt/oafe/OAFE/conf/systemd/maltrail-sensor.service /lib/systemd/system/maltrail-sensor.service >> $HOME/oafe-install.log || return 1
         cp -f /opt/oafe/OAFE/conf/maltrail/maltrail.conf /opt/oafe/maltrail/maltrail.conf >> $HOME/oafe-install.log || return 1
         systemctl daemon-reload >> $HOME/oafe-install.log || return 1
+	systemctl enable maltrailserver.service >> $HOME/oafe-install.log || return 1
         systemctl enable maltrail-sensor >> $HOME/oafe-install.log || return 1
 
 echoinfo "Installing Moloch DPI"

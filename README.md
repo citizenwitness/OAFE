@@ -47,7 +47,7 @@ Boot to USB drive
 
 Disclaimer
 -------------
-This is not production software by default. This software is supplied "AS IS" without any warranties and support.
+This is not production software by default. It will require some configuration to be utlized in production. This software is supplied "AS IS" without any warranties and support.
 
 All parties involved in the development (currently Optum Technology and Rich Baker) assume no responsibility or liability for the use of the software, conveys no license or title under any patent, copyright, or mask work right to the product.
 

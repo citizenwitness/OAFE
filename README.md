@@ -11,6 +11,12 @@ Description
 -------------
 The OAFE project was designed to assist with threat hunting and forensic investigations at remote locations.  It is primarily a set of configurations and a bootstrap install script.  With a limited amount of effort, the install script allows you to download a number of open source software projects onto one device.  It also includes a number of ingest scripts for importing data into the data platform that is installed.   This project does not distribute any software from other vendors, it simply facilitates downloads and configuration.  
 
+This is not production software by default. This software is supplied "AS IS" without any warranties and support.
+
+All parties involved in the development (currently Optum Technology and Rich Baker) assume no responsibility or liability for the use of the software, conveys no license or title under any patent, copyright, or mask work right to the product.
+
+Optum Technology reserves the right to make changes in the software without notification. All parties involved in the development also make no representation or warranty that such application will be suitable for the specified use without further testing or modification.
+
 
 Prerequisites
 -------------

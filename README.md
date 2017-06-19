@@ -9,7 +9,7 @@
 
 Description 
 -------------
-The OAFE project was designed to assist with investigations at remote locations.  It is primarily a set of configurations and a bootstrap install script.  With a limited amount of effort, the install script allows you to download a number of open source software projects onto one device.  It also includes a number of ingest scripts for importing data into the data platform that is installed.   This project does not distribute any software from other vendors, it simply facilitates downloads and configuration.  
+The OAFE project was designed to assist with threat hunting and forensic investigations at remote locations.  It is primarily a set of configurations and a bootstrap install script.  With a limited amount of effort, the install script allows you to download a number of open source software projects onto one device.  It also includes a number of ingest scripts for importing data into the data platform that is installed.   This project does not distribute any software from other vendors, it simply facilitates downloads and configuration.  
 
 
 Prerequisites

@@ -43,4 +43,4 @@ Boot to USB drive
  12. Tailor the GRR install for your needs.
  13. When the install is complete, add an oafe user for GRR.  First run `sudo grr_config_updater add_user INSERTYOURUSERNAMEHERE`.  
  14. Add admin access by issuing the following `sudo grr_config_updater update_user oafe --add_labels admin,user`
- 15. Add Moloch user.  From a terminal cd to /data/moloch/viewer.  Issue the following command `sudo node addUser.js PICKAUSERNAME "ADMIN User" PICKAPASSWORD -admin`
+ 15. Add Moloch user.  From a terminal cd to /data/moloch/viewer.  Issue the following command `sudo node addUser.js PICKAUSERNAME "ADMIN User" PICKAPASSWORD -admin`.

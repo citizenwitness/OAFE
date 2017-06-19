@@ -17,9 +17,9 @@ Prerequisites
 
 **Hardware**
 
-16GB RAM
-250GB + HDD (SSD or RAID preferred)
-4 Core processor
+16GB RAM 
+250GB + HDD (SSD or RAID preferred) 
+4 Core processor 
 2 Network interface cards
 
 Installation

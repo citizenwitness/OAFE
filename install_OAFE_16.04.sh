@@ -424,6 +424,7 @@ libyara3
 libzmq3-dev
 ltrace
 make
+maltegoce
 masscan
 md5deep
 meld

@@ -224,7 +224,7 @@ install_ubuntu_16.04_deps() {
     echoinfo "Enabling the Cockpit Repository"
     add-apt-repository -y ppa:cockpit-project/cockpit
     
-    echoinfo "Enabling MongoDB Repository
+    echoinfo "Enabling MongoDB Repository"
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6 >> $HOME/oafe-install.log 2>&1 || return 1
     echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list >> $HOME/oafe-install.log 2>&1 || return 1
 

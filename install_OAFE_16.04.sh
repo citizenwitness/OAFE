@@ -162,6 +162,8 @@ remove_bad_old_deps() {
 }
 
 install_ubuntu_16.04_deps() {
+    echoinfo "© Optum, 2017"
+    
     echoinfo "Updating your APT Repositories ... "
     apt-get update >> $HOME/oafe-install.log 2>&1 || return 1
 

@@ -1096,6 +1096,10 @@ echoinfo "OAFE VM: Setting up symlinks to useful scripts"
     echoinfo "starting fcgiwrap service"
     service fcgiwrap start
 
+    echoinfo "Enabling MongoDB to autostart
+    systemctl daemon-reload
+    systemctl enable mongod
+    
     #fixing permissions for systemd services, they should be set to 644
     sudo chmod 0644 /etc/systemd/system/kibi.service
     sudo chmod 0644 /etc/systemd/system/viperweb.service

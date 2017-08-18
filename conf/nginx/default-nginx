@@ -7,32 +7,32 @@
 #}
 #
 #**This will force all traffic to https**#
-server {
-  listen *:80 ;
-  listen [::]:80 ;
+#server {
+#  listen *:80 ;
+#  listen [::]:80 ;
 
   #ssl configuration
-  listen 443 ssl default_server;
-  listen [::]:443 ssl default_server;
+#  listen 443 ssl default_server;
+#  listen [::]:443 ssl default_server;
 
-  ssl on;
-  ssl_certificate       /etc/nginx/ssl/nginx.crt;  ## Replace with your own certificate
-  ssl_certificate_key   /etc/nginx/ssl/nginx.key;  ## Replace with your own key
-  server_name _; ## Replace with your domain name
-  access_log            /var/log/nginx/index.access.log;
-  error_log             /var/log/nginx/index.error.log;
+# ssl on;
+#  ssl_certificate       /etc/nginx/ssl/nginx.crt;  ## Replace with your own certificate
+#  ssl_certificate_key   /etc/nginx/ssl/nginx.key;  ## Replace with your own key
+#  server_name _; ## Replace with your domain name
+#  access_log            /var/log/nginx/index.access.log;
+#  error_log             /var/log/nginx/index.error.log;
   #return 301 http://$host$request_uri;
 
-  root /var/www/html/;
-  index index.nginx-debian.html;
+#  root /var/www/html/;
+#  index index.nginx-debian.html;
 
-  location / {
-  auth_basic "Restricted";
-  auth_basic_user_file /etc/nginx/conf.d/oafe.htpasswd;
-  try_files $uri $uri/ =404;
-  }
+#  location / {
+#  auth_basic "Restricted";
+#  auth_basic_user_file /etc/nginx/conf.d/oafe.htpasswd;
+#  try_files $uri $uri/ =404;
+#  }
 
-}
+#}
 
 #**IVRE web interface, this is static web content so we serve it at port 32500**#
 server {
@@ -200,6 +200,23 @@ server {
   auth_basic "Restricted";
   auth_basic_user_file /etc/nginx/conf.d/oafe.htpasswd;
   proxy_pass http://127.0.0.1:3000; ## Replace with your NTOPng instance
+  }
+}
+
+#**Moloch web interface config listening on port 8005 internally and 8510 externally **#
+server {
+  listen                *:8510 ;
+  ssl on;
+  ssl_certificate /etc/nginx/ssl/nginx.crt;  ## Replace with your own certificate
+  ssl_certificate_key /etc/nginx/ssl/nginx.key;  ## Replace with your own key
+  server_name           oafe.local; ## Replace with your domain name
+  access_log            /var/log/nginx/moloch.access.log;
+  error_log  /var/log/nginx/moloch.error.log;
+
+  location / {
+  auth_basic "Restricted";
+  auth_basic_user_file /etc/nginx/conf.d/oafe.htpasswd;
+  proxy_pass http://127.0.0.1:3000; ## Replace with your moloch instance
   }
 }
 

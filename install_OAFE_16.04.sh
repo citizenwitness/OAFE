@@ -753,12 +753,12 @@ echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
         chmod -R 775 /opt/oafe/OAFE/Packages/
         chmod -R g+s /opt/oafe/OAFE/Packages/
     fi
-    wget -O /opt/oafe/OAFE/Packages/elasticsearch-5.3.2.deb https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.3.2.deb
-    wget -O /opt/oafe/OAFE/Packages/kibana-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/kibana/kibana-5.3.2-amd64.deb
-    wget -O /opt/oafe/OAFE/Packages/filebeat-5.3.2-amd64.deb https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.3.2-amd64.deb
-    dpkg -i /opt/oafe/OAFE/Packages/elasticsearch-5.3.2.deb
-    dpkg -i /opt/oafe/OAFE/Packages/filebeat-5.3.2-amd64.deb
-    dpkg -i /opt/oafe/OAFE/Packages/kibana-5.3.2-amd64.deb
+    wget -O /opt/oafe/OAFE/Packages/elasticsearch-5.4.3.deb https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.3.deb
+    wget -O /opt/oafe/OAFE/Packages/kibana-5.4.3-amd64.deb https://artifacts.elastic.co/downloads/kibana/kibana-5.4.3-amd64.deb
+    wget -O /opt/oafe/OAFE/Packages/filebeat-5.4.3-amd64.deb https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-5.4.3-amd64.deb
+    dpkg -i /opt/oafe/OAFE/Packages/elasticsearch-5.4.3.deb
+    dpkg -i /opt/oafe/OAFE/Packages/filebeat-5.4.3-amd64.deb
+    dpkg -i /opt/oafe/OAFE/Packages/kibana-5.4.3-amd64.deb
     if [ ! -d /etc/logstash/conf.d/ ]; then
         mkdir -p /etc/logstash/conf.d/
         chown oafe:oafe /etc/logstash/conf.d/
@@ -785,9 +785,9 @@ echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
     systemctl start kibana
     systemctl start filebeat
     cp -f /opt/oafe/OAFE/etc/elasticsearch/jvm.options /etc/elasticsearch/jvm.options
-    wget -O /opt/oafe/OAFE/Packages/logstash-5.3.2.zip https://artifacts.elastic.co/downloads/logstash/logstash-5.3.2.zip
-    unzip /opt/oafe/OAFE/Packages/logstash-5.3.2.zip -d /opt/oafe/ >> $HOME/oafe-install.log 2>&1
-    mv -f /opt/oafe/logstash-5.3.2/ /opt/oafe/logstash >> $HOME/oafe-install.log 2>&1
+    wget -O /opt/oafe/OAFE/Packages/logstash-5.4.3.zip https://artifacts.elastic.co/downloads/logstash/logstash-5.4.3.zip
+    unzip /opt/oafe/OAFE/Packages/logstash-5.4.3.zip -d /opt/oafe/ >> $HOME/oafe-install.log 2>&1
+    mv -f /opt/oafe/logstash-5.4.3.zip/ /opt/oafe/logstash >> $HOME/oafe-install.log 2>&1
     sudo ln -s -f /opt/oafe/logstash/bin/logstash /usr/bin/logstash >> $HOME/oafe-install.log 2>&1
     sudo ln -s -f /opt/oafe/logstash/bin/logstash-plugin /usr/bin/logstash-plugin >> $HOME/oafe-install.log 2>&1
     sudo ln -s -f /opt/oafe/logstash/bin/logstash.lib.sh /usr/bin/logstash.lib.sh >> $HOME/oafe-install.log 2>&1
@@ -797,14 +797,14 @@ echoinfo "Installing Elasticsearch, Kibana, Logstash, and Graylog as services"
     
 echoinfo "Install Kibi"
 
-wget -O /opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip https://download.support.siren.solutions/kibi/community?file=kibi-community-standalone-5.2.2-beta-1-linux-x64.zip
-if [ -f "/opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip" ];
+wget -O /opt/oafe/OAFE/Packages/kibi-community-standalone-5.4.0-beta-2-linux-x86_64.zip https://download.support.siren.solutions/kibi/community?file=kibi-community-standalone-5.4.0-beta-2-linux-x86_64.zip
+if [ -f "/opt/oafe/OAFE/Packages/kibi-community-standalone-5.4.0-beta-2-linux-x86_64.zip" ];
     then
-      echo "kibi-community-standalone-5.2.2-beta-1-linux-x64.zip found."
+      echo "kibi-community-standalone-5.4.0-beta-2-linux-x86_64.zip found."
       chmod -R 775 /opt/oafe/
-      chmod 777 /opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip  >> $HOME/oafe-install.log || return 1
-	  unzip /opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x64.zip -d /opt/oafe/ >> $HOME/oafe-install.log || return 1
-      mv -f /opt/oafe/kibi-community-standalone-5.2.2-beta-1-linux-x64 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
+      chmod 777 /opt/oafe/OAFE/Packages/kibi-community-standalone-5.4.0-beta-2-linux-x86_64.zip  >> $HOME/oafe-install.log || return 1
+	  unzip /opt/oafe/OAFE/Packages/kibi-community-standalone-5.4.0-beta-2-linux-x86_64.zip -d /opt/oafe/ >> $HOME/oafe-install.log || return 1
+      mv -f /opt/oafe/kibi-community-standalone-5.4.0-beta-2-linux-x86_64 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chmod -R 777 /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chown oafe:oafe /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
       chmod g+s /opt/oafe/kibi  >> $HOME/oafe-install.log || return 1
@@ -815,7 +815,7 @@ if [ -f "/opt/oafe/OAFE/Packages/kibi-community-standalone-5.2.2-beta-1-linux-x6
       systemctl enable kibi  >> $HOME/oafe-install.log || return 1
       systemctl start kibi  >> $HOME/oafe-install.log || return 1
     else
-    	echo "kibi-community-standalone-5.2.2-beta-1-linux-x64.zip not found."
+    	echo "kibi-community-standalone-5.4.0-beta-2-linux-x86_64.zip not found."
 fi
 
 echoinfo "Starting BRO IDS"
@@ -853,11 +853,11 @@ echoinfo "Installing Maltrail"
 echoinfo "Installing Moloch DPI"
 	sleep 1m
 	systemctl start elasticsearch
-	wget -O /opt/oafe/OAFE/Packages/moloch_0.18.3-1_amd64.deb https://files.molo.ch/builds/ubuntu-16.04/moloch_0.18.3-1_amd64.deb
-  if [ -f "/opt/oafe/OAFE/Packages/moloch_0.18.3-1_amd64.deb" ];
+	wget -O /opt/oafe/OAFE/Packages/moloch_0.19.1-1_amd64.deb https://files.molo.ch/builds/ubuntu-16.04/moloch_0.19.1-1_amd64.deb
+  if [ -f "/opt/oafe/OAFE/Packages/moloch_0.19.1-1_amd64.deb" ];
     then
-      echo "moloch_0.18.3-1_amd64.deb found."
-      dpkg -i /opt/oafe/OAFE/Packages/moloch_0.18.3-1_amd64.deb
+      echo "moloch_0.19.1-1_amd64.deb found."
+      dpkg -i /opt/oafe/OAFE/Packages/moloch_0.19.1-1_amd64.deb
       echoinfo "Please choose your capture interface.  On DL380G9, this is eno1.  On mini or Z Workstations, the span port should be the onboard adapter.  It will be eno1"
     	/data/moloch/bin/Configure
     	/data/moloch/db/db.pl http://localhost:9200 init
@@ -874,7 +874,7 @@ echoinfo "Installing Moloch DPI"
     cp -f /opt/oafe/OAFE/conf/moloch/daily.sh /data/moloch/db/daily.sh >> $HOME/oafe-install.log || return 1
     echo "0 1 * * * /data/moloch/db/daily.sh" | tee -a /var/spool/cron/root
     else
-    	echo "moloch_0.18.3-1_amd64.deb not found."
+    	echo "moloch_0.19.1-1_amd64.deb not found."
   fi
 
 echoinfo "Enabling Google Rapid Response Installer"
@@ -911,6 +911,10 @@ echoinfo "Install Viper Framework"
     chmod g+s /opt/oafe/viper >> $HOME/oafe-install.log || return 1
     cp -f /opt/oafe/OAFE/conf/systemd/viperweb.service /etc/systemd/system/viperweb.service >> $HOME/oafe-install.log || return 1
     cp -f /opt/oafe/OAFE/conf/systemd/viper.service /etc/systemd/system/viper.service >> $HOME/oafe-install.log || return 1
+
+
+echoinfo "Installing Lima Charlie"
+sudo bash -c "curl -L https://raw.githubusercontent.com/refractionPOINT/lc_cloud/master/infrastructure/bootstrap_cloud_in_a_can.sh | tr '\n' '; ' | env LC_BRANCH=master bash -s"
 
 #echoinfo "Changing Ubuntu Launcher icons...Cmon, you don't really need the Amazon shopping app on here!!"
 #    chmod 777 /opt/oafe/OAFE/utilities/launcherctl.py
